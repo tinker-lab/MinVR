@@ -13,6 +13,7 @@ else
   ifeq ($(UNAME), Linux)
     ARCH=linux
     NPROCS = $(shell nproc)
+    CUR_DIR_NAME:=$(shell basename $(CURDIR))
   else ifeq ($(UNAME), Darwin)
     ARCH=OSX
   else
@@ -38,37 +39,52 @@ gen:
 
 debug:
     ifeq ($(ARCH), linux) 
-	  cd ./build/$(GBUILDSTR)/Debug; make -j$(NPROC)
+	  cd ./build/Debug; make -j$(NPROC)
     else
 	  @echo "Open the project file to build the project on this architecture."
     endif
 
 release opt:
     ifeq ($(ARCH), linux) 
-	  cd ./build/$(GBUILDSTR)/Release; make -j$(NPROC)
+	  cd ./build/Release; make -j$(NPROC)
     else
 	  @echo "Open the project file to build the project on this architecture."
     endif
 
 install:
     ifeq ($(ARCH), linux) 
-	  cd ./build/$(GBUILDSTR)/Debug; make install
-	  cd ./build/$(GBUILDSTR)/Release; make install
+	  cd ./build/Debug; make install
+	  cd ./build/Release; make install
     else
 	  @echo "Open the project file to run make install on this architecture."
     endif
-	
+
+linux-install:
+    ifeq ($(ARCH), linux) 
+	  cd ./build/Debug; make install
+	  cd ./build/Release; make install
+    else
+	  @echo "Open the project file to run make install on this architecture."
+    endif
+
+eclipse: linux-install
+    ifeq ($(ARCH), linux)
+	  mkdir -p ../$(CUR_DIR_NAME)_build
+	  cd ../$(CUR_DIR_NAME)_build; cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_DEPENDENCIES=OFF -DCMAKE_INSTALL_PREFIX=$(CURDIR)/install ../$(CUR_DIR_NAME)/ -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_ECLIPSE_VERSION=4.3
+    endif
+
 clean:
     ifeq ($(ARCH), linux) 
-	  cd ./build/$(GBUILDSTR)/Debug; make clean
-	  cd ./build/$(GBUILDSTR)/Release; make clean
+	  cd ./build/Debug; make clean
+	  cd ./build/Release; make clean
     else
 	  @echo "Open the project file to run make clean on this architecture."
     endif
-	  
+
 clobber:
 	rm -rf ./build
 	rm -rf ./dependencies/boost
 	rm -rf ./dependencies/glfw
 	rm -rf ./dependencies/vrpn
 	rm -rf ./install
+	rm -rf ../$(CUR_DIR_NAME)_build	  

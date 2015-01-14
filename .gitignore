@@ -16,8 +16,32 @@ install/
 dependencies/G3D9
 dependencies/glfw
 dependencies/boost
+dependencies/vrpn
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 cmake_uninstall.cmake
 
+# Local MinVR
+*log.txt
+*local.cfg
+*local.sh
+*local.vrsetup
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# VIM
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~

@@ -29,28 +29,33 @@ source_group("Header Files" FILES ${HEADERFILES})
 #------------------------------------------
 # Download dependencies
 #------------------------------------------
-set(glfw_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/glfw)
-make_directory(${glfw_checkout_Dir})
-include(ExternalProject)
+if (BUILD_DEPENDENCIES)
+  set(glfw_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/glfw)
+  make_directory(${glfw_checkout_Dir})
+  include(ExternalProject)
+endif()
 set(glfw_PREFIX "${glfw_checkout_Dir}")
 set(glfw_INSTALL_DIR "${MINVR_INSTALL_DIR}/glfw")
-set(glfw_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${glfw_INSTALL_DIR} -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON)
-set(glfw_DIR "${glfw_INSTALL_DIR}")
+if (BUILD_DEPENDENCIES)
+  set(glfw_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${glfw_INSTALL_DIR} -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON)
+  set(glfw_DIR "${glfw_INSTALL_DIR}")
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		set(glfw_CMAKE_ARGS ${glfw_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD="c++11" -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY="libc++")
-endif()
+   endif()
 
-ExternalProject_add(glfw
+   ExternalProject_add(glfw
 		PREFIX ${glfw_PREFIX}
 		GIT_REPOSITORY https://github.com/bretjackson/glfw.git
 		GIT_TAG gpu-affinity
 		INSTALL_DIR ${glfw_INSTALL_DIR}
 		CMAKE_ARGS ${glfw_CMAKE_ARGS}
- )
+		UPDATE_COMMAND ""
+   )
  
-set_property(TARGET glfw PROPERTY FOLDER "Dependencies")
+   set_property(TARGET glfw PROPERTY FOLDER "Dependencies")
 
+endif()
 set(GLFW_INCLUDE_DIR ${glfw_INSTALL_DIR}/include CACHE INTERNAL "Directory of GLFW header files")
 if(MSVC)
 	set(GLFW_LIBRARY ${glfw_INSTALL_DIR}/lib/glfw3.lib CACHE INTERNAL "GLFW lib file")
