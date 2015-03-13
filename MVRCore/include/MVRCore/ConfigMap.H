@@ -50,16 +50,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include "MVRCore/StringUtils.H"
 #include "MVRCore/DataFileUtils.H"
-#include <boost/shared_ptr.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
+#include <memory>
 #include <unordered_map>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
+#include <log/Logger.h>
 
 namespace MinVR {
 
@@ -139,7 +132,7 @@ Vector3 v = myMap->get("MyVector", Vector3::zero());
 /// std::strings.  The ConfigVal function is used to access values and
 /// reinterpret them as different types.  The key/value pairs can be
 /// read in from a file(s), or set manually with the set function.
-typedef boost::shared_ptr<class ConfigMap> ConfigMapRef;
+typedef std::shared_ptr<class ConfigMap> ConfigMapRef;
 class ConfigMap
 {
 public:
@@ -183,16 +176,12 @@ public:
 				return val;
 			}
 			else {
-				boost::log::sources::logger logger;
-				logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-				BOOST_LOG(logger) << "ConfigMap Error: cannot remap " << valString;
+				Logger::getInstance().log(std::string("ConfigMap Error: cannot remap ") + valString, "Tag", "MinVR Core");
 				return defaultVal;
 			}
 		}
 		else {
-			boost::log::sources::logger logger;
-			logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-			BOOST_LOG(logger) << "ConfigMap Error: cannot find " << keyString;
+			Logger::getInstance().log(std::string("ConfigMap Error: cannot find ") + keyString, "Tag", "MinVR Core");
 			return defaultVal;
 		}
 	}
@@ -201,9 +190,7 @@ public:
 		if (containsKey(keyString))
 			return replaceEnvVars(getValue(keyString));
 		else {
-			boost::log::sources::logger logger;
-			logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-			BOOST_LOG(logger) << "ConfigMap Warning: no mapping for '" << keyString <<"'";
+			Logger::getInstance().log(std::string("ConfigMap Warning: no mapping for '") + keyString +"'", "Tag", "MinVR Core");
 			return replaceEnvVars(defaultVal);
 		}
 	}
@@ -212,9 +199,7 @@ public:
 		if (containsKey(keyString))
 			return replaceEnvVars(getValue(keyString));
 		else {
-			boost::log::sources::logger logger;
-			logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-			BOOST_LOG(logger) << "ConfigMap Warning: no mapping for '" << keyString <<"'";
+			Logger::getInstance().log(std::string("ConfigMap Warning: no mapping for '") + keyString +"'", "Tag", "MinVR Core");
 			return replaceEnvVars(defaultVal);
 		}
 	}
@@ -223,9 +208,7 @@ public:
 		if (containsKey(keyString))
 			return replaceEnvVars(getValue(keyString));
 		else {
-			boost::log::sources::logger logger;
-			logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-			BOOST_LOG(logger) << "ConfigMap Warning: no mapping for '" << keyString <<"'";
+			Logger::getInstance().log(std::string("ConfigMap Warning: no mapping for '") + keyString +"'", "Tag", "MinVR Core");
 			return replaceEnvVars(defaultVal);
 		}
 	}
@@ -234,9 +217,7 @@ public:
 		if (containsKey(keyString))
 			return replaceEnvVars(getValue(keyString));
 		else {
-			boost::log::sources::logger logger;
-			logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-			BOOST_LOG(logger) << "ConfigMap Warning: no mapping for '" << keyString <<"'";
+			Logger::getInstance().log(std::string("ConfigMap Warning: no mapping for '") + keyString +"'", "Tag", "MinVR Core");
 			return replaceEnvVars(defaultVal);
 		}
 	}

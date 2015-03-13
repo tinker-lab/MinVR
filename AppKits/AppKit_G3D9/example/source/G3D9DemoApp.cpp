@@ -68,14 +68,14 @@ void G3D9DemoApp::doUserInputAndPreDrawComputation(const std::vector<MinVR::Even
 
 void G3D9DemoApp::initializeContextSpecificVars(int threadId, MinVR::WindowRef window)
 {
-	initVBO();
+	initVBO(threadId);
 
 	RenderDevice* rd = dynamic_cast<WindowG3D9*>(window.get())->getRenderDevice();
 	rd->setColorClearValue(Color4(0.2f, 0.2f, 0.2f, 1.0f));
 
 }
 
-void G3D9DemoApp::initVBO()
+void G3D9DemoApp::initVBO(int threadId)
 {
 	// Allocate on CPU
 	Array<Vector3> cpuVertex;
@@ -204,10 +204,10 @@ void G3D9DemoApp::initVBO()
 	// Upload to GPU
 	shared_ptr<VertexBuffer> vbuf = VertexBuffer::create(((sizeof(Vector3)*2) * cpuVertex.size()) + (sizeof(Color3)*cpuColors.size()) + (sizeof(int) * cpuIndex.size()));
 	//_vbuffer.reset(vbuf.get());
-	_gpuVertex.reset(new AttributeArray(cpuVertex, vbuf));
-	_gpuNormals.reset(new AttributeArray(cpuNormals, vbuf));
-	_gpuColors.reset(new AttributeArray(cpuColors, vbuf));
-	_gpuIndex.reset(new IndexStream(cpuIndex, vbuf));
+	_gpuVertex[threadId] = AttributeArray(cpuVertex, vbuf);
+	_gpuNormals[threadId] = AttributeArray(cpuNormals, vbuf);
+	_gpuColors[threadId] = AttributeArray(cpuColors, vbuf);
+	_gpuIndex[threadId] = IndexStream(cpuIndex, vbuf);
 }
 
 void G3D9DemoApp::postInitialization()
@@ -229,10 +229,10 @@ void G3D9DemoApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera, Mi
 	rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
 	rd->beginIndexedPrimitives();
-	rd->setVertexArray(*(_gpuVertex.get()));
-	rd->setNormalArray(*(_gpuNormals.get()));
-	rd->setColorArray(*(_gpuColors.get()));
-	rd->sendIndices(PrimitiveType::TRIANGLES, *(_gpuIndex.get()));
+	rd->setVertexArray(_gpuVertex[threadId]);
+	rd->setNormalArray(_gpuNormals[threadId]);
+	rd->setColorArray(_gpuColors[threadId]);
+	rd->sendIndices(PrimitiveType::TRIANGLES, _gpuIndex[threadId]);
 	rd->endIndexedPrimitives();
 		
 	

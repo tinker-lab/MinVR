@@ -64,7 +64,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/Event.H"
 #include <map>
-#include <boost/algorithm/string.hpp>
 #include <string>
 #include <glm/glm.hpp>
 

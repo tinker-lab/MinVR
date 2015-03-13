@@ -50,10 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <sstream>
 #include "MVRCore/ConfigMap.H"
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
-#include <boost/log/sources/logger.hpp>
+#include <log/Logger.h>
 
 namespace MinVR {
 
@@ -138,7 +135,7 @@ static inline void notFoundWarning(const std::string &keyString) {
 /// don't require a type conversion, but can confuse a compiler.
 template <class KEYTYPE, class VALTYPE>
 VALTYPE ConfigVal(KEYTYPE keyString, const VALTYPE &defaultVal, bool warn=true) {
-	BOOST_ASSERT_MSG(ConfigValMap::map, "The global config map is NULL!");
+	MinVR::Logger::getInstance().assertMessage(ConfigValMap::map != nullptr , "The global config map is NULL!");
 	if (!ConfigValMap::map->containsKey(keyString)) {
 		if (warn) {
 			notFoundWarning(keyString);
@@ -172,7 +169,7 @@ VALTYPE ConfigVal(KEYTYPE keyString, const VALTYPE &defaultVal, bool warn=true) 
 #endif
 
 inline std::string ConfigVal(QUOTED_STRING keyString, QUOTED_STRING defaultVal, bool warn=true) {
-	BOOST_ASSERT_MSG(ConfigValMap::map != nullptr, "The global config map is NULL!");
+	MinVR::Logger::getInstance().assertMessage(ConfigValMap::map != nullptr, "The global config map is NULL!");
 	if (ConfigValMap::map->containsKey(keyString))
 		return replaceEnvVars(ConfigValMap::map->getValue(keyString));
 	else {
@@ -182,7 +179,7 @@ inline std::string ConfigVal(QUOTED_STRING keyString, QUOTED_STRING defaultVal, 
 }
 
 inline std::string ConfigVal(QUOTED_STRING keyString, std::string defaultVal, bool warn=true) {
-	BOOST_ASSERT_MSG(ConfigValMap::map != nullptr , "The global config map is NULL!");
+	MinVR::Logger::getInstance().assertMessage(ConfigValMap::map != nullptr , "The global config map is NULL!");
 	if (ConfigValMap::map->containsKey(keyString))
 		return replaceEnvVars(ConfigValMap::map->getValue(keyString));
 	else {
@@ -192,7 +189,7 @@ inline std::string ConfigVal(QUOTED_STRING keyString, std::string defaultVal, bo
 }
 
 inline std::string ConfigVal(std::string keyString, QUOTED_STRING defaultVal, bool warn=true) {
-	BOOST_ASSERT_MSG(ConfigValMap::map != nullptr, "The global config map is NULL!");
+	MinVR::Logger::getInstance().assertMessage(ConfigValMap::map != nullptr, "The global config map is NULL!");
 	if (ConfigValMap::map->containsKey(keyString))
 		return replaceEnvVars(ConfigValMap::map->getValue(keyString));
 	else {
@@ -202,7 +199,7 @@ inline std::string ConfigVal(std::string keyString, QUOTED_STRING defaultVal, bo
 }
 
 inline std::string ConfigVal(std::string keyString, std::string defaultVal, bool warn=true) {
-	BOOST_ASSERT_MSG(ConfigValMap::map != nullptr, "The global config map is NULL!");
+	MinVR::Logger::getInstance().assertMessage(ConfigValMap::map != nullptr, "The global config map is NULL!");
 	if (ConfigValMap::map->containsKey(keyString))
 		return replaceEnvVars(ConfigValMap::map->getValue(keyString));
 	else {

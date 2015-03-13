@@ -61,7 +61,7 @@ namespace MinVR {
 void VRPN_CALLBACK analogHandler(void *thisPtr, const vrpn_ANALOGCB info)
 {
 	int lastchannel = (int)glm::min(info.num_channel, (int)((InputDeviceVRPNAnalog*)thisPtr)->numChannels());
-	boost::posix_time::ptime msgTime = boost::posix_time::microsec_clock::local_time();
+	TimeStamp msgTime = getCurrentTime();
 	for (int i=0;i<lastchannel;i++) {
 		((InputDeviceVRPNAnalog*)thisPtr)->sendEventIfChanged(i, info.channel[i], msgTime);
 	}
@@ -78,7 +78,7 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string &vrpnAnalogDevice
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Analog with name" + vrpnAnalogDeviceName;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, analogHandler);
@@ -89,9 +89,7 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, const Confi
 	std::string  vrpnname = map->get( name + "_InputDeviceVRPNAnalogName", "" );
 	std::string  events   = map->get( name + "_EventsToGenerate", "" );
 
-	boost::log::sources::logger logger;
-	logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-	BOOST_LOG(logger) << "Creating new InputDeviceVRPNAnalog (" + vrpnname + ")";
+	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")", "Tag", "MinVR Core");
 
 	_eventNames = splitStringIntoArray( events );
 	for (int i=0;i<_eventNames.size();i++) { 
@@ -102,7 +100,7 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, const Confi
 	if (!_vrpnDevice) { 
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Analog with name" + vrpnname;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, analogHandler);
@@ -122,7 +120,7 @@ std::string	InputDeviceVRPNAnalog::getEventName(int channelNumber)
 	}
 }
 
-void InputDeviceVRPNAnalog::sendEventIfChanged(int channelNumber, double data, const boost::posix_time::ptime &msg_time)
+void InputDeviceVRPNAnalog::sendEventIfChanged(int channelNumber, double data, const TimeStamp &msg_time)
 {
 	if (_channelValues[channelNumber] != data) {
 		_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));

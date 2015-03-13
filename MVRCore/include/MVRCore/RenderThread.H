@@ -50,10 +50,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractMVRApp.H"
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/DataFileUtils.H"
-#include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
+#include "MVRCore/Thread.h"
+#include <memory>
 #include <vector>
-#include <boost/filesystem.hpp>
 #include "MVRCore/StringUtils.H"
 
 #if defined(WIN32)
@@ -87,7 +86,7 @@ public:
 		RENDERING_TERMINATE
 	};
 
-	RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, boost::barrier* swapBarrier, boost::mutex* initializedMutex, boost::condition_variable* initializedCondition, boost::mutex* startRenderingMutex, boost::mutex* renderingCompleteMutex, boost::condition_variable* startRenderingCond, boost::condition_variable* renderingCompleteCond);
+	RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier, Mutex* initializedMutex, ConditionVariable* initializedCondition, Mutex* startRenderingMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond, ConditionVariable* renderingCompleteCond);
 	~RenderThread();
 
 	static RenderingState renderingState;
@@ -109,14 +108,14 @@ private:
 	AbstractMVRAppRef _app;
 	bool	_rendering;
 	int		_numRenderingThreads;
-	boost::shared_ptr<boost::thread> _thread;
-	boost::barrier* _swapBarrier;
-	boost::mutex* _initMutex;
-	boost::mutex* _startRenderingMutex;
-	boost::mutex* _renderingCompleteMutex;
-	boost::condition_variable* _initCond;
-	boost::condition_variable* _startRenderingCond;
-	boost::condition_variable* _renderingCompleteCond;
+	std::shared_ptr<Thread> _thread;
+	Barrier* _swapBarrier;
+	Mutex* _initMutex;
+	Mutex* _startRenderingMutex;
+	Mutex* _renderingCompleteMutex;
+	ConditionVariable* _initCond;
+	ConditionVariable* _startRenderingCond;
+	ConditionVariable* _renderingCompleteCond;
 	int _threadId;
 	
 	GLuint _stereoFBO;

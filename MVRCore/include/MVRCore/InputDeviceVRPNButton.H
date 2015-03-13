@@ -68,13 +68,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractInputDevice.H"
 #include "MVRCore/ConfigMap.H"
 
-#include <boost/log/trivial.hpp>
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
+#include "MVRCore/Time.h"
+#include <log/Logger.h>
 
 #ifdef USE_VRPN
 class vrpn_Button_Remote;
@@ -96,7 +91,7 @@ public:
 	void pollForInput(std::vector<EventRef> &events);
 
 	std::string getEventName(int buttonNumber);
-	void sendEvent(int buttonNumber, bool down, const boost::posix_time::ptime &msg_time);
+	void sendEvent(int buttonNumber, bool down, const TimeStamp &msg_time);
 
 private:
 	vrpn_Button_Remote  *_vrpnDevice;
@@ -105,11 +100,11 @@ private:
 #else
 	InputDeviceVRPNButton(const std::string &vrpnButtonDeviceName, const std::vector<std::string> &eventsToGenerate)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 	InputDeviceVRPNButton(const std::string name, const ConfigMapRef map)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	virtual ~InputDeviceVRPNButton() {}

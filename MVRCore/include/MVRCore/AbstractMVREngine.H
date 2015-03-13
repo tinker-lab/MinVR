@@ -67,30 +67,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef nil
 #undef nil
 #endif
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/condition_variable.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sinks/sync_frontend.hpp>
-#include <boost/log/sinks/text_ostream_backend.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-#include <boost/utility/empty_deleter.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/attributes/constant.hpp>
+
+#include <memory>
+#include "MVRCore/Thread.h"
 #include <vector>
-#include <fstream>
 #include <iostream>
 #include <algorithm>
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
+#include "log/Logger.h"
 
 namespace MinVR {
 
@@ -148,9 +131,9 @@ public:
 	 */
 	virtual void initializeContextSpecificVars(int threadId, WindowRef window);
 
-	/*! @brief Initialize Boost Log v2.0
+	/*! @brief Initialize Log
 	 *
-	 *  Sets up the logging file to the console and log file using Boost.Log v2.0
+	 *  Sets up the logging
 	 */
 	virtual void initializeLogging();
 
@@ -209,14 +192,14 @@ protected:
 	std::vector<WindowRef>  _windows;
 	std::vector<AbstractInputDeviceRef> _inputDevices;
 	std::vector<RenderThreadRef> _renderThreads;
-	boost::mutex _threadsInitializedMutex;
-	boost::condition_variable _threadsInitializedCond;
-	boost::mutex _startRenderingMutex;
-	boost::condition_variable _startRenderingCond;
-	boost::mutex _renderingCompleteMutex;
-	boost::condition_variable _renderingCompleteCond;
-	boost::shared_ptr<boost::barrier> _swapBarrier;
-	boost::posix_time::ptime _syncTimeStart;
+	Mutex _threadsInitializedMutex;
+	ConditionVariable _threadsInitializedCond;
+	Mutex _startRenderingMutex;
+	ConditionVariable _startRenderingCond;
+	Mutex _renderingCompleteMutex;
+	ConditionVariable _renderingCompleteCond;
+	std::shared_ptr<Barrier> _swapBarrier;
+	TimeStamp _syncTimeStart;
 	unsigned long _frameCount;
 };
 

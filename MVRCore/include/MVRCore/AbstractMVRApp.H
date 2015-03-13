@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ABSTRACTMVRAPP_H
 #define ABSTRACTMVRAPP_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <glm/glm.hpp>
 #include "MVRCore/Event.H"
 #include "MVRCore/ConfigVal.H"

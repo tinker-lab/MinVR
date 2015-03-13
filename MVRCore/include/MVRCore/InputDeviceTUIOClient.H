@@ -59,9 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/Event.H"
 #include <vector>
 #include <unordered_set>
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
+#include <log/Logger.h>
 
 
 
@@ -90,12 +88,12 @@ private:
 #else
 	InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 )
 	{
-		BOOST_ASSERT_MSG(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
 	}
 
 	InputDeviceTUIOClient( const std::string name, const ConfigMapRef map )
 	{
-		BOOST_ASSERT_MSG(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
 	}
 
 	virtual ~InputDeviceTUIOClient() {}

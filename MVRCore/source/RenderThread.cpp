@@ -54,6 +54,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MVRCore/RenderThread.H"
 #include "MVRCore/AbstractMVREngine.H"
+#include <log/Logger.h>
+#include <io/FileSystem.h>
 
 using namespace std;
 
@@ -66,8 +68,8 @@ size_t RenderThread::numRenderingThreads = 0;
 int RenderThread::nextThreadId = 0;
 int RenderThread::numThreadsInitComplete = 0;
 
-RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, boost::barrier* swapBarrier,  boost::mutex* initializedMutex, boost::condition_variable* initializedCondition,
-	boost::mutex* startRenderingMutex, boost::mutex* renderingCompleteMutex, boost::condition_variable* startRenderingCond, boost::condition_variable* renderingCompleteCond)
+RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier,  Mutex* initializedMutex, ConditionVariable* initializedCondition,
+		Mutex* startRenderingMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond, ConditionVariable* renderingCompleteCond)
 {
 	_window = window;
 	_engine = engine;
@@ -82,7 +84,7 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	_threadId = RenderThread::nextThreadId;
 	RenderThread::nextThreadId++;
 
-	_thread = boost::shared_ptr<boost::thread>(new boost::thread(&RenderThread::render, this));
+	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
 }
 
 RenderThread::~RenderThread()
@@ -123,7 +125,7 @@ void RenderThread::render()
 	while (running) {
 
 		// Wait for the main thread to signal that it's ok to start rendering
-		boost::unique_lock<boost::mutex> startRenderingLock(*_startRenderingMutex);
+		UniqueMutexLock startRenderingLock(*_startRenderingMutex);
 		while (renderingState == RENDERING_WAIT) {
 			_startRenderingCond->wait(startRenderingLock);
 		}
@@ -288,7 +290,7 @@ void RenderThread::initExtensions()
 		!pglGenRenderbuffers || !pglDeleteRenderbuffers || !pglBindRenderbuffer || !pglRenderbufferStorage ||
 		!pglGetRenderbufferParameteriv || !pglIsRenderbuffer)
 	{
-		BOOST_ASSERT_MSG(false, "Video card does NOT support GL_ARB_framebuffer_object.");
+		MinVR::Logger::getInstance().assertMessage(false, "Video card does NOT support GL_ARB_framebuffer_object.");
 	}
 	
 	pglCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
@@ -309,7 +311,7 @@ void RenderThread::initExtensions()
 		!pglAttachShader || !pglLinkProgram || !pglGetShaderiv || !pglGetProgramivARB || !pglUseProgram ||
 		!pglGetUniformLocation || !pglUniform2f || !pglUniform1i )
 	{
-		BOOST_ASSERT_MSG(false, "Video card does NOT support loading shader extensions.");
+		MinVR::Logger::getInstance().assertMessage(false, "Video card does NOT support loading shader extensions.");
 	}
 
 	pglBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
@@ -317,13 +319,13 @@ void RenderThread::initExtensions()
 	pglBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
 
 	if (!pglBindBuffer || !pglGenBuffers || !pglBufferData) {
-		BOOST_ASSERT_MSG(false, "Video card does NOT support vertex buffer objects.");
+		MinVR::Logger::getInstance().assertMessage(false, "Video card does NOT support vertex buffer objects.");
 	}
 
 	pglActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
 
 	if (!pglActiveTexture) {
-		BOOST_ASSERT_MSG(false, "Video card does NOT support glActiveTexture");
+		MinVR::Logger::getInstance().assertMessage(false, "Video card does NOT support glActiveTexture");
 	}
 
 #endif
@@ -342,7 +344,7 @@ void RenderThread::initStereoCompositeShader()
 		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);	
 	
 		std::string vertexShaderName = DataFileUtils::findDataFile("shaders/stereo.vert");
-		BOOST_ASSERT_MSG(boost::filesystem::exists(vertexShaderName), "Unable to load vertex shader for stereo in RenderThread.cpp. File not found");
+		MinVR::Logger::getInstance().assertMessage(MinVR::FileSystem::getInstance().exists(vertexShaderName), "Unable to load vertex shader for stereo in RenderThread.cpp. File not found");
 		const char* vs = readWholeFile(vertexShaderName).c_str();
 
 		std::string fragShaderName = "";
@@ -356,7 +358,7 @@ void RenderThread::initStereoCompositeShader()
 			fragShaderName = DataFileUtils::findDataFile("shaders/stereo-interlacedrows.frag");
 		}
 
-		BOOST_ASSERT_MSG(boost::filesystem::exists(fragShaderName), "Unable to load fragment shader for stereo in RenderThread.cpp. File not found");
+		MinVR::Logger::getInstance().assertMessage(MinVR::FileSystem::getInstance().exists(fragShaderName), "Unable to load fragment shader for stereo in RenderThread.cpp. File not found");
 		const char* fs = readWholeFile(fragShaderName).c_str();
 	
 		glShaderSource(vertexShader, 1, &vs,NULL);
@@ -443,7 +445,7 @@ void RenderThread::initStereoFramebufferAndTextures() {
 		}
 
 		if (e != GL_FRAMEBUFFER_COMPLETE) {
-			BOOST_ASSERT_MSG(false, message.c_str());
+			MinVR::Logger::getInstance().assertMessage(false, message.c_str());
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

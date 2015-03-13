@@ -61,7 +61,7 @@ namespace MinVR {
 
 void  VRPN_CALLBACK	buttonHandler(void *thisPtr, const vrpn_BUTTONCB info)
 {
-	boost::posix_time::ptime msgTime = boost::posix_time::microsec_clock::local_time();
+	TimeStamp msgTime = getCurrentTime();
 
 	((InputDeviceVRPNButton*)thisPtr)->sendEvent(info.button, info.state, msgTime);
 }
@@ -76,7 +76,7 @@ InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string &vrpnButtonDevice
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Button with name " + vrpnButtonDeviceName;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, buttonHandler);
@@ -87,9 +87,7 @@ InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string name, const Confi
 	std::string vrpnname = map->get( name + "_InputDeviceVRPNButtonName", "" );
 	std::string events   = map->get( name + "_EventsToGenerate","" );
 
-	boost::log::sources::logger logger;
-	logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-	BOOST_LOG(logger) << "Creating new InputDeviceVRPNButton (" + vrpnname + ")";
+	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")", "Tag", "MinVR Core");
 
 	_eventNames = splitStringIntoArray( events );
 
@@ -97,7 +95,7 @@ InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string name, const Confi
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Button with name " + vrpnname;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, buttonHandler);
@@ -117,7 +115,7 @@ std::string InputDeviceVRPNButton::getEventName(int buttonNumber)
 	}
 }
 
-void InputDeviceVRPNButton::sendEvent(int buttonNumber, bool down, const boost::posix_time::ptime &msg_time)
+void InputDeviceVRPNButton::sendEvent(int buttonNumber, bool down, const TimeStamp &msg_time)
 {
 	std::string ename = getEventName(buttonNumber);
 	if (down) {

@@ -51,7 +51,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <iostream>
 #include "MVRCore/StringUtils.H"
-#include <boost/filesystem.hpp>
 
 namespace MinVR
 {

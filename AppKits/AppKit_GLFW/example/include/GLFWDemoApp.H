@@ -55,8 +55,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <glm/gtc/matrix_transform.hpp>
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
-#include <boost/thread.hpp>
 #include <vector>
+#include <map>
 
 class GLFWDemoApp : public MinVR::AbstractMVRApp
 {
@@ -71,10 +71,10 @@ public:
 
 private:
 	void initGL();
-	void initVBO();
+	void initVBO(int threadId);
 	void initLights();
 
-	boost::thread_specific_ptr<GLuint> _vboId;
+	std::map<int, GLuint> _vboId;
 };
 
 #endif

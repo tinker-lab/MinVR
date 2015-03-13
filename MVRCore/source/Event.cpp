@@ -46,37 +46,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MVRCore/Event.H"
 #include "MVRCore/StringUtils.H"
-#include <boost/format.hpp>
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
 
 #include "MVRCore/AbstractWindow.H"
+#include "log/Logger.h"
+#include <sstream>
 
 namespace MinVR {
 	
-Event::Event(const std::string &name, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp)
+Event::Event(const std::string &name, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_type = EVENTTYPE_STANDARD;
 	_id = id;
 	_window = window;
 }
 
-Event::Event(const std::string &name, const double data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp)
+Event::Event(const std::string &name, const double data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_data1D = data;
 	_type = EVENTTYPE_1D;
@@ -84,14 +72,9 @@ Event::Event(const std::string &name, const double data, const WindowRef window/
 	_window = window;
 }
 
-Event::Event(const std::string &name, const glm::dvec2 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp)
+Event::Event(const std::string &name, const glm::dvec2 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_data2D = data;
 	_type = EVENTTYPE_2D;
@@ -99,14 +82,9 @@ Event::Event(const std::string &name, const glm::dvec2 &data, const WindowRef wi
 	_window = window;
 }
 
-Event::Event(const std::string &name, const glm::dvec3 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp) 
+Event::Event(const std::string &name, const glm::dvec3 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_data3D = data;
 	_type = EVENTTYPE_3D;
@@ -114,14 +92,9 @@ Event::Event(const std::string &name, const glm::dvec3 &data, const WindowRef wi
 	_window = window;
 }
 
-Event::Event(const std::string &name, const glm::dvec4 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp) 
-{ 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+Event::Event(const std::string &name, const glm::dvec4 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
+{
+	_timestamp = timestamp;
 	_name = name;
 	_data4D = data;
 	_type = EVENTTYPE_4D;
@@ -130,14 +103,9 @@ Event::Event(const std::string &name, const glm::dvec4 &data, const WindowRef wi
 }
 
 
-Event::Event(const std::string &name, const glm::dmat4 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp) 
+Event::Event(const std::string &name, const glm::dmat4 &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp)
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_dataCF = data;
 	_type = EVENTTYPE_COORDINATEFRAME;
@@ -145,14 +113,9 @@ Event::Event(const std::string &name, const glm::dmat4 &data, const WindowRef wi
 	_window = window;
 }
 
-Event::Event(const std::string &name, const std::string &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const boost::posix_time::ptime &timestamp )
+Event::Event(const std::string &name, const std::string &data, const WindowRef window/*= nullptr*/, const int id/*= -1*/, const TimeStamp &timestamp )
 { 
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 	_name = name;
 	_dataMsg = data;
 	_type = EVENTTYPE_MSG;
@@ -160,14 +123,9 @@ Event::Event(const std::string &name, const std::string &data, const WindowRef w
 	_window = window;
 }
 
-Event::Event(const std::string &eventString, const boost::posix_time::ptime &timestamp)
+Event::Event(const std::string &eventString, const TimeStamp &timestamp)
 {
-	if (timestamp.is_not_a_date_time()) {
-		_timestamp = boost::posix_time::microsec_clock::local_time();
-	}
-	else {
-		_timestamp = timestamp;
-	}
+	_timestamp = timestamp;
 
 	std::string str = eventString;
 	MinVR::popNextToken(str, _name, false);
@@ -216,7 +174,7 @@ Event::Event(const std::string &eventString, const boost::posix_time::ptime &tim
 			}
 			break;
 		default:
-			BOOST_ASSERT_MSG(false, "Unknown Event type in Event constructor from event string");
+			MinVR::Logger::getInstance().assertMessage(false, "Unknown Event type in Event constructor from event string");
 	}
 
 	_window = nullptr; // Don't bother with the window reference because it might not exist.
@@ -281,7 +239,7 @@ std::string	Event::getMsgData()
 	return _dataMsg;
 }
 
-boost::posix_time::ptime Event::getTimestamp()
+TimeStamp Event::getTimestamp()
 {
 	return _timestamp;
 }
@@ -299,35 +257,54 @@ bool Event::operator<(EventRef otherRef) const
 std::string	Event::toString()
 {
 	std::string escapedMessage = _dataMsg;
-	boost::replace_all(escapedMessage, "\n", "\\n");
-	boost::replace_all(escapedMessage, "\t", "\\t");
+	replaceAll(escapedMessage, "\n", "\\n");
+	replaceAll(escapedMessage, "\t", "\\t");
+
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(6) << _name.c_str() << " " << _type << " (Data: ";
 
 	switch (_type) {
 	case EVENTTYPE_STANDARD:
-		return boost::str(boost::format("%s %d (Data: %s; Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_STANDARD % _dataMsg % _id % _window);
+		ss << _dataMsg;
 		break;
 	case EVENTTYPE_1D:
-		return boost::str(boost::format("%s %d (Data: %.6f; Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_1D % _data1D % _id % _window);
+		ss << _data1D;
 		break;
 	case EVENTTYPE_2D:
-		return boost::str(boost::format("%s %d (Data: (%.6f, %.6f); Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_2D % _data2D[0] % _data2D[1] % _id % _window);
+		ss << "(" << _data2D[0] << " ," << _data2D[1] << ")";
 		break;
 	case EVENTTYPE_3D:
-		return boost::str(boost::format("%s %d (Data: (%.6f, %.6f, %.6f); Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_3D % _data3D[0] % _data3D[1] % _data3D[2] % _id % _window);
+		ss << "(" << _data3D[0] << " ," << _data3D[1] << " ," << _data3D[2] << ")";
 		break;
 	case EVENTTYPE_4D:
-		return boost::str(boost::format("%s %d (Data: (%.6f, %.6f, %.6f, %.6f); Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_4D % _data4D[0] % _data4D[1] % _data4D[2] % _data4D[3] % _id % _window);
+		ss << "(" << _data4D[0] << " ," << _data4D[1] << " ," << _data4D[2] << " ," << _data4D[3] << ")";
 		break;
 	case EVENTTYPE_COORDINATEFRAME:
-		return boost::str(boost::format("%s %d (Data: ((%.6f, %.6f, %.6f, %.6f), (%.6f, %.6f, %.6f, %.6f), (%.6f, %.6f, %.6f, %.6f), (%.6f, %.6f, %.6f, %.6f)); Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_COORDINATEFRAME  % _dataCF[0][0] % _dataCF[1][0] % _dataCF[2][0]  % _dataCF[3][0]
-							 % _dataCF[0][1]  % _dataCF[1][1]  % _dataCF[2][1]  % _dataCF[3][1] % _dataCF[0][2] % _dataCF[1][2] % _dataCF[2][2] % _dataCF[3][2] % _dataCF[0][3] % _dataCF[1][3] % _dataCF[2][3] % _dataCF[3][3] % _id % _window);
+		ss << "(";
+		for (int f = 0; f < 4; f++)
+		{
+			if (f != 0)
+			{
+				ss << ", ";
+			}
+			for (int i = 0; i < 4; i++)
+			{
+				ss << "(" << _dataCF[i][f] << " ," << _dataCF[i][f] << " ," << _dataCF[i][f] << " ," << _dataCF[i][f] << ")";
+			}
+		}
+		ss << ")";
+		break;
 	case EVENTTYPE_MSG:
-		return boost::str(boost::format("%s %d (Data: %s; Id: %d; Window ptr: %s)") % _name.c_str() % EVENTTYPE_MSG % escapedMessage % _id % _window);
+		ss << escapedMessage;
 		break;
 	default:
 		return _name;
 		break;
 	}
+
+	ss << "; Id: "<< _id << "; Window ptr: " << _window << ")";
+
+	return ss.str();
 }
 
 
@@ -356,7 +333,7 @@ EventRef createCopyOfEvent(EventRef e)
 			return std::shared_ptr<Event>(new Event(e->getName(),e->getMsgData(), e->getWindow(), e->getId()));
 			break;
 		default:
-			BOOST_ASSERT_MSG(false, "createCopyOfEvent: Unknown event type!");
+			MinVR::Logger::getInstance().assertMessage(false, "createCopyOfEvent: Unknown event type!");
 			return NULL;
 			break;
 	}

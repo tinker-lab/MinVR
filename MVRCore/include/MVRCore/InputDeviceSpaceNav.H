@@ -68,12 +68,7 @@ Makefile to link with the SDK.
 #include "MVRCore/ConfigMap.H"
 #include "MVRCore/Event.H"
 #include <vector>
-#include <boost/log/trivial.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
-
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
+#include <log/Logger.h>
 
 
 namespace MinVR {
@@ -85,9 +80,7 @@ public:
 #ifdef USE_SPACENAV
 	InputDeviceSpaceNav( const std::string name, const ConfigMapRef map = NULL )
 	{
-		boost::log::sources::logger logger;
-		logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-		BOOST_LOG(logger) << "Creating new SpaceNavDevice";
+		Logger::getInstance().log("Creating new SpaceNavDevice", "Tag", "MinVR Core");
 		setup();
 	}
 
@@ -103,7 +96,7 @@ private:
 #else
 	InputDeviceSpaceNav(const std::string name, const ConfigMapRef map = NULL)
 	{
-		BOOST_ASSERT_MSG(false, "Spacenav is currently unsupported. Set cmake option USE_SPACENAV to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "Spacenav is currently unsupported. Set cmake option USE_SPACENAV to ON and recompile.");
 	}
 
 	virtual ~InputDeviceSpaceNav() {}

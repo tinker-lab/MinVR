@@ -62,14 +62,8 @@ based on tracker data from VRPN.
 #include "MVRCore/AbstractInputDevice.H"
 #include "MVRCore/ConfigMap.H"
 #include "MVRCore/StringUtils.H"
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
-
-#include <boost/log/trivial.hpp>
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
+#include "MVRCore/Time.h"
+#include <log/Logger.h>
 
 #ifdef USE_VRPN
 class vrpn_Tracker_Remote;
@@ -132,7 +126,7 @@ public:
 
 	virtual ~InputDeviceVRPNTracker();
 
-	void processEvent(const glm::dmat4 &vrpnEvent, int sensorNum, const boost::posix_time::ptime &msg_time);
+	void processEvent(const glm::dmat4 &vrpnEvent, int sensorNum, const TimeStamp &msg_time);
 	std::string getEventName(int trackerNumber);
 	void pollForInput(std::vector<EventRef> &events);
 	void setPrintSensor0(bool b) { _printSensor0 = b; }
@@ -163,12 +157,12 @@ private:
 		const bool									   &convertLHtoRH = false,
 		const bool									   &ignoreZeroes = false)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	InputDeviceVRPNTracker(const std::string name, const ConfigMapRef map)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	virtual ~InputDeviceVRPNTracker() {}

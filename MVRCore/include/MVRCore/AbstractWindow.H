@@ -47,7 +47,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <boost/shared_ptr.hpp>
 #include <glm/glm.hpp>
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/Event.H"

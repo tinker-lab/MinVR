@@ -54,14 +54,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MVRCore/AbstractInputDevice.H"
 #include "MVRCore/ConfigMap.H"
+#include "MVRCore/Time.h"
 
-#include <boost/log/trivial.hpp>
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
+#include <log/Logger.h>
 
 #ifdef USE_VRPN
 class vrpn_Analog_Remote;
@@ -82,7 +77,7 @@ public:
 	virtual ~InputDeviceVRPNAnalog();
 
 	void        pollForInput(std::vector<EventRef> &events);
-	void        sendEventIfChanged(int channelNumber, double data, const boost::posix_time::ptime &msg_time);
+	void        sendEventIfChanged(int channelNumber, double data, const TimeStamp &msg_time);
 	std::string getEventName(int channelNumber);
 	size_t         numChannels() { return _eventNames.size(); }
 
@@ -94,11 +89,11 @@ private:
 #else
 	InputDeviceVRPNAnalog(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 	InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map)
 	{
-		BOOST_ASSERT_MSG(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	virtual ~InputDeviceVRPNAnalog() {};

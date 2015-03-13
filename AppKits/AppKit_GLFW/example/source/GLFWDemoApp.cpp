@@ -46,6 +46,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "GLFWDemoApp.H"
 
+#include "MVRCore/StringUtils.H"
+
 using namespace MinVR;
 
 GLFWDemoApp::GLFWDemoApp() : MinVR::AbstractMVRApp()
@@ -54,7 +56,9 @@ GLFWDemoApp::GLFWDemoApp() : MinVR::AbstractMVRApp()
 
 GLFWDemoApp::~GLFWDemoApp()
 {
-	glDeleteBuffersARB(1, _vboId.get());
+	for(std::map<int, GLuint>::iterator iterator = _vboId.begin(); iterator != _vboId.end(); iterator++) {
+		glDeleteBuffersARB(1, &iterator->second);
+	}
 }
 
 void GLFWDemoApp::doUserInputAndPreDrawComputation(const std::vector<MinVR::EventRef> &events, double synchronizedTime)
@@ -67,7 +71,7 @@ void GLFWDemoApp::doUserInputAndPreDrawComputation(const std::vector<MinVR::Even
 void GLFWDemoApp::initializeContextSpecificVars(int threadId, WindowRef window)
 {
 	initGL();
-	initVBO();
+	initVBO(threadId);
 	initLights();
 
 	glClearColor(0.f, 0.3f, 1.f, 1.f);
@@ -78,7 +82,7 @@ void GLFWDemoApp::initializeContextSpecificVars(int threadId, WindowRef window)
 	}
 }
 
-void GLFWDemoApp::initVBO()
+void GLFWDemoApp::initVBO(int threadId)
 {
 	// cube ///////////////////////////////////////////////////////////////////////
 	//    v6----- v5
@@ -156,9 +160,9 @@ void GLFWDemoApp::initVBO()
     // glBufferDataARB with NULL pointer reserves only memory space.
     // Copy actual data with 2 calls of glBufferSubDataARB, one for vertex coords and one for normals.
     // target flag is GL_ARRAY_BUFFER_ARB, and usage flag is GL_STATIC_DRAW_ARB
-	_vboId.reset(new GLuint(0));
-	glGenBuffersARB(1, _vboId.get());
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, *(_vboId.get()));
+	_vboId[threadId] = GLuint(0);
+	glGenBuffersARB(1, &_vboId[threadId]);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId[threadId]);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals)+sizeof(colors), 0, GL_STATIC_DRAW_ARB);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(vertices), vertices);                             // copy vertices starting from 0 offest
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), sizeof(normals), normals);                // copy normals after vertices
@@ -230,7 +234,7 @@ void GLFWDemoApp::drawGraphics(int threadId, AbstractCameraRef camera, WindowRef
 		std::cout << "GLERROR: "<<err<<std::endl;
 	}
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, *(_vboId.get()));
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId[threadId]);
 
     // enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);

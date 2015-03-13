@@ -11,6 +11,7 @@ Original Author(s) of this File:
 	
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR using boost)
+	Dan Orban, 2015, University of Minnesota (abstracted out boost dependency)
 
 -----------------------------------------------------------------------------------
 Copyright (c) 2008-2015 Regents of the University of Minnesota and Brown University
@@ -46,6 +47,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MVRCore/ConfigMap.H"
 #include <iostream>
+#include <fstream>
+#include <io/FileSystem.h>
 using namespace std;
 
 namespace MinVR {
@@ -54,16 +57,16 @@ bool ConfigMap::readFile(const std::string &filename)
 {
 	std::string instr;
 
-	if (boost::filesystem::exists(filename))
+	if (MinVR::FileSystem::getInstance().exists(filename))
 	{
 		std::string output = "ConfigMap parsing file \"" + filename + "\".";
 		std::cout << output << std::endl;
 
-		boost::filesystem::ifstream fIn;
+		ifstream fIn;
 		fIn.open(filename.c_str(),std::ios::in);
 
 		if (!fIn) {
-			BOOST_ASSERT_MSG(false, "ConfigMap Error: Unable to load config file");
+			MinVR::Logger::getInstance().assertMessage(false, "ConfigMap Error: Unable to load config file");
 		}
 		std::stringstream ss;
 		ss << fIn.rdbuf();
@@ -74,7 +77,7 @@ bool ConfigMap::readFile(const std::string &filename)
 	{  
 		std::stringstream ss;
 		ss << "Cannot locate config file " << filename;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 
@@ -268,7 +271,7 @@ ConfigMap::ConfigMap(int argc, char **argv, bool exitOnUnrecognizedArgument)
 					size_t e = kv.find("=");
 					std::stringstream msg;
 					msg << "Invalid key=value command line argument: \""+kv+"\"";
-					BOOST_ASSERT_MSG(e>0, msg.str().c_str());
+					MinVR::Logger::getInstance().assertMessage(e>0, msg.str().c_str());
 					std::string key = kv.substr(0,e);
 					std::string val = kv.substr(e+1);
 					set(key, val);

@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ABSTRACTCAMERA_H
 #define ABSTRACTCAMERA_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace MinVR {

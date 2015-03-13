@@ -46,7 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ABSTRACTINPUTDEVICE_H
 #define ABSTRACTINPUTDEVICE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "MVRCore/Event.H"
 
 namespace MinVR {

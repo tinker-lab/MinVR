@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "MVRCore/DataFileUtils.H"
+#include "io/FileSystem.h"
 
 namespace MinVR
 {
@@ -93,16 +94,16 @@ DataFileUtils::DataFileUtils()
 	_dataFilePaths.push_back("../../share/vrsetup/");
 	_dataFilePaths.push_back("../../share/shaders/");
 	_dataFilePaths.push_back(INSTALLPATH);
-	_dataFilePaths.push_back((boost::filesystem::path(INSTALLPATH) / boost::filesystem::path("share/")).string());
-	_dataFilePaths.push_back((boost::filesystem::path(INSTALLPATH) / boost::filesystem::path("share/vrsetup")).string());
-	_dataFilePaths.push_back((boost::filesystem::path(INSTALLPATH) / boost::filesystem::path("share/shaders")).string());
+	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/"));
+	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/vrsetup"));
+	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/shaders"));
 }
 
 std::string DataFileUtils::_findDataFile(const std::string &filename)
 {
 	for (int i = 0; i < _dataFilePaths.size(); i++)	{ 
-		std::string fname = (boost::filesystem::path(_dataFilePaths[i]) / boost::filesystem::path(filename)).string();
-		if (boost::filesystem::exists(fname)) {
+		std::string fname = FileSystem::getInstance().concatPath(_dataFilePaths[i], filename);
+		if (FileSystem::getInstance().exists(fname)) {
 			return fname;
 		}
 	}
@@ -110,7 +111,7 @@ std::string DataFileUtils::_findDataFile(const std::string &filename)
 	std::cout << "Could not find data file as either:" << std::endl;
 
 	for (int i = 0; i < _dataFilePaths.size(); i++) {  
-		std::string fname = (boost::filesystem::path(_dataFilePaths[i]) / boost::filesystem::path(filename)).string();
+		std::string fname = FileSystem::getInstance().concatPath(_dataFilePaths[i], filename);
 		std::cout << i << ". " << fname << std::endl;
 	}
 

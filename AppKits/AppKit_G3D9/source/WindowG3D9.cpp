@@ -47,12 +47,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AppKit_G3D9/WindowG3D9.H"
 
 #include <GLFW/glfw3.h>
+#include "log/Logger.h"
 
 namespace MinVR {
 
 using namespace std;
 
-boost::mutex WindowG3D9::_RDMUTEX;
+Mutex WindowG3D9::_RDMUTEX;
 
 WindowG3D9::WindowG3D9(WindowSettingsRef settings, std::vector<AbstractCameraRef> cameras) : AbstractWindow(settings, cameras)
 {
@@ -106,7 +107,7 @@ void WindowG3D9::createRenderDevice()
 	debugAssertM(_renderDevice == nullptr, "RenderDevice has already been created");
 
 	// creating a renderdevice is not threadsafe since it references G3D::GLCaps.cpp which caches some stuff
-	boost::unique_lock<boost::mutex> initRDLock(_RDMUTEX);
+	UniqueMutexLock initRDLock(_RDMUTEX);
 	_renderDevice = new G3D::RenderDevice();
 	_renderDevice->init(_window);
 	initRDLock.unlock();
@@ -390,7 +391,7 @@ std::string WindowG3D9::getKeyValue(G3D::GKey::Value key, G3D::GKeyMod mod)
 
 	if (value != "") {
 		if (mod & G3D::GKeyMod::SHIFT) {
-			boost::to_upper(value);
+			toUpper(value);
 		}
 	}
 	else {
@@ -454,7 +455,7 @@ void WindowG3D9::makeContextCurrent()
 
 void WindowG3D9::releaseContext()
 {
-	BOOST_ASSERT_MSG(false, "Release context is not currently supported by the G3D9 app kit");
+	Logger::getInstance().assertMessage(false, "Release context is not currently supported by the G3D9 app kit");
 }
 
 int WindowG3D9::getWidth()

@@ -44,6 +44,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 #include "AppKit_GLFW/WindowGLFW.H"
+#include <iostream>
+#include "log/Logger.h"
 
 namespace MinVR {
 
@@ -133,7 +135,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	}
 	if (!_window) {
 		glfwTerminate();
-		BOOST_ASSERT_MSG(false, "Unable to create new GLFW window");
+		Logger::getInstance().assertMessage(false, "Unable to create new GLFW window");
 	}
 
 	WindowGLFW::pointerToObjectMap.insert(std::pair<GLFWwindow*, WindowRef>(_window, WindowRef(this)));
@@ -174,7 +176,7 @@ void WindowGLFW::initGLEW()
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
-		BOOST_ASSERT_MSG(false, "Unable to initialize GLEW");
+		Logger::getInstance().assertMessage(false, "Unable to initialize GLEW");
 	}
 	glfwMakeContextCurrent(NULL);
 	glfwDestroyWindow(tempWin);
@@ -527,7 +529,7 @@ string WindowGLFW::getKeyValue(int key, int mods)
 	if (value != "") {
 		if (mods & GLFW_MOD_SHIFT)
 		{
-			boost::to_upper(value);
+			toUpper(value);
 		}
 	}
 	else {

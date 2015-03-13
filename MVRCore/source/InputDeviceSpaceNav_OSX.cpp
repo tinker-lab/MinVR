@@ -51,10 +51,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <3DconnexionClient/ConnexionClientAPI.h>
 
 #include  "MVRCore/InputDeviceSpaceNav.H"
-#include <boost/thread.hpp>
+#include "MVRCore/Thread.h"
 
 UInt16 gClientID;
-boost::mutex  gEventBufferMutex;
+Mutex  gEventBufferMutex;
 static std::vector<MinVR::EventRef> gEventBuffer;
 
 // Mark these function for weak-linking to avoid runtime issues if the

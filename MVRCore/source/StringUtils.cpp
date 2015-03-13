@@ -47,6 +47,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/StringUtils.H"
 
 #include <sstream>
+#include <io/FileSystem.h>
+#include <iostream>
+#include <fstream>
+#include <cctype>
 
 using namespace std;
 
@@ -402,13 +406,13 @@ int	findNth(const std::string &str, const std::string &substr, const int n)
 std::string readWholeFile(const std::string& filename)
 {
 	string instr;
-	if (boost::filesystem::exists(filename))
+	if (MinVR::FileSystem::getInstance().exists(filename))
 	{
-		boost::filesystem::ifstream fIn;
+		std::ifstream fIn;
 		fIn.open(filename.c_str(),std::ios::in);
 
 		if (!fIn) {
-			BOOST_ASSERT_MSG(false, "Error: Unable to load file");
+			MinVR::Logger::getInstance().assertMessage(false, "Error: Unable to load file");
 		}
 		std::stringstream ss;
 		ss << fIn.rdbuf();
@@ -419,20 +423,40 @@ std::string readWholeFile(const std::string& filename)
 	{  
 		std::stringstream ss;
 		ss << "Cannot locate file " << filename;
-		BOOST_ASSERT_MSG(false, ss.str().c_str());
+		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 	return instr;
+}
+
+bool startsWith(std::string& input, const std::string& symbol)
+{
+	return input.find(symbol) == 0;
+}
+
+void toUpper(std::string& str) {
+	for (int f = 0; f < str.length(); f++)
+	{
+		str[f] = std::toupper(str[f]);
+	}
 }
 
 bool readSymbol(std::string& input, const std::string& symbol)
 {
 	input = trimWhitespace(input);
-	if (boost::starts_with(input, symbol)) {
+	if (startsWith(input, symbol)) {
 		input = input.substr(symbol.size());
 		input = trimWhitespace(input);
 		return true;
 	}
 	return false;
+}
+
+void replaceAll(std::string& str, const std::string& search, const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos) {
+    	str.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
 }
 
 /*

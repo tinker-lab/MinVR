@@ -172,7 +172,7 @@ glm::dmat4 CameraOffAxis::perspectiveProjection(double left, double right, doubl
        d = -(2.0*farval*nearval) / (farval-nearval);
     }
 
-    BOOST_ASSERT_MSG(abs(upDirection) == 1.0, "upDirection must be -1 or +1");
+    MinVR::Logger::getInstance().assertMessage(abs(upDirection) == 1.0, "upDirection must be -1 or +1");
     y *= upDirection;
     b *= upDirection;
 

@@ -71,7 +71,7 @@ void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
 	vrpnEvent = glm::column(vrpnEvent, 3, glm::dvec4(info.pos[0],info.pos[1],info.pos[2], 1.0));
 
 	InputDeviceVRPNTracker* device = ((InputDeviceVRPNTracker*)thisPtr);
-	boost::posix_time::ptime msgTime = boost::posix_time::microsec_clock::local_time();
+	TimeStamp msgTime = getCurrentTime();
 	device->processEvent(vrpnEvent, info.sensor, msgTime);
 }
 
@@ -99,7 +99,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker(
 	_vrpnDevice = new vrpn_Tracker_Remote(vrpnTrackerDeviceName.c_str());
 	std::stringstream ss;
 	ss << "Can't create VRPN Remote Tracker with name " + vrpnTrackerDeviceName;
-	BOOST_ASSERT_MSG(_vrpnDevice, ss.str().c_str());
+	MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
 	_vrpnDevice->register_change_handler(this, trackerHandler);
 }
 
@@ -169,9 +169,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 	bool convertLHtoRH = map->get( name + "_ConvertLHtoRH", false );
 	bool ignoreZeroes  = map->get( name + "_IgnoreZeroes", false );
 
-	boost::log::sources::logger logger;
-	logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-	BOOST_LOG(logger) << "Creating new InputDeviceVRPNTracker ( " + vrpnname + ")";
+	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")", "Tag", "MinVR Core");
 
 	_eventNames                   = events;
 	_trackerUnitsToRoomUnitsScale = scale;
@@ -187,7 +185,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 	_vrpnDevice = new vrpn_Tracker_Remote(vrpnname.c_str(), _vrpnConnection);
 	std::stringstream ss;
 	ss <<  "Can't create VRPN Remote Tracker with name " + vrpnname;
-	BOOST_ASSERT_MSG(_vrpnDevice, ss.str().c_str());
+	MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
 	_vrpnDevice->register_change_handler(this, trackerHandler);
 }
 
@@ -208,7 +206,7 @@ room space.  You can think of this as what rotation, then
 translation would move the origin of RoomSpace to the origin of
 tracking device.  This is the deviceToRoom coordinate frame.
 */
-void InputDeviceVRPNTracker::processEvent(const glm::dmat4 &vrpnEvent, int sensorNum, const boost::posix_time::ptime &msg_time)
+void InputDeviceVRPNTracker::processEvent(const glm::dmat4 &vrpnEvent, int sensorNum, const TimeStamp &msg_time)
 {
 
 	if(_ignoreZeroes && glm::column(vrpnEvent, 3) == glm::dvec4(0.0, 0.0, 0.0, 1.0)){

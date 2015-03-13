@@ -46,9 +46,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MVRCore/AbstractMVREngine.H"
 
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
-
 namespace MinVR {
 
 AbstractMVREngine::AbstractMVREngine()
@@ -59,30 +56,10 @@ AbstractMVREngine::~AbstractMVREngine()
 {
 }
 
-BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
 
 void AbstractMVREngine::initializeLogging()
 {
-    boost::shared_ptr<boost::log::core> core = boost::log::core::get();
-
-    // Create a backend and attach a couple of streams to it
-    boost::shared_ptr<boost::log::sinks::text_ostream_backend> backend = boost::make_shared<boost::log::sinks::text_ostream_backend>();
-    backend->add_stream(boost::shared_ptr< std::ostream >(&std::cout, boost::empty_deleter()));
-    backend->add_stream(boost::shared_ptr< std::ostream >(new std::ofstream("log.txt")));
-
-    // Enable auto-flushing after each log record written
-    backend->auto_flush(true);
-
-    // Wrap it into the frontend and register in the core.
-    // The backend requires synchronization in the frontend.
-    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> sink_t;
-    boost::shared_ptr< sink_t > sink(new sink_t(backend));
-    core->add_sink(sink);
-	boost::log::add_common_attributes();
-	sink->set_filter
-    (
-	boost::log::trivial::severity >= boost::log::trivial::info || (boost::log::expressions::has_attr(tag_attr) && tag_attr == "MinVR Core")
-    );
+	MinVR::Logger::getInstance().init();
 }
 
 void AbstractMVREngine::init(int argc, char **argv)
@@ -91,7 +68,7 @@ void AbstractMVREngine::init(int argc, char **argv)
 	_configMap.reset(new ConfigMap(argc, argv, false));
 	ConfigValMap::map = _configMap;
 	
-	_syncTimeStart = boost::posix_time::microsec_clock::local_time();
+	_syncTimeStart = getCurrentTime();
 	setupWindowsAndViewports();
 	setupInputDevices();
 }
@@ -101,7 +78,7 @@ void AbstractMVREngine::init(ConfigMapRef configMap)
 	_configMap = configMap;
 	ConfigValMap::map = _configMap;
 
-	_syncTimeStart = boost::posix_time::microsec_clock::local_time();
+	_syncTimeStart = getCurrentTime();
 	setupWindowsAndViewports();
 	setupInputDevices();
 }
@@ -164,7 +141,7 @@ void AbstractMVREngine::setupWindowsAndViewports()
 		else {
 			std::stringstream ss;
 			ss << "Fatal error: Unrecognized value for " + winStr + "StereoType: " + stereoStr;
-			BOOST_ASSERT_MSG(false, ss.str().c_str());
+			Logger::getInstance().assertMessage(false, ss.str().c_str());
 		}
 
 
@@ -198,12 +175,12 @@ void AbstractMVREngine::setupWindowsAndViewports()
 			}
 			else if (cameraStr == "Traditional") {
 				// TODO: Implement this for use with systems like desktop haptics.
-				BOOST_ASSERT_MSG(false, "Traditional camera not yet implemented");
+				Logger::getInstance().assertMessage(false, "Traditional camera not yet implemented");
 			}
 			else {
 				std::stringstream ss;
 				ss << "Fatal error: Unrecognized value for " << viewportStr << "CameraType: " << cameraStr;
-				BOOST_ASSERT_MSG(false, ss.str().c_str());
+				Logger::getInstance().assertMessage(false, ss.str().c_str());
 			}
 		}
 
@@ -245,7 +222,7 @@ void AbstractMVREngine::setupInputDevices()
 			else {
 				std::stringstream ss;
 				ss << "Fatal error: Unrecognized input device type" << type;
-				BOOST_ASSERT_MSG(false, ss.str().c_str());
+				Logger::getInstance().assertMessage(false, ss.str().c_str());
 			}
 		}
 	}
@@ -266,7 +243,7 @@ void AbstractMVREngine::setupRenderThreads()
 	RenderThread::nextThreadId = 0;
 	RenderThread::numThreadsInitComplete = 0;
 
-	_swapBarrier = boost::shared_ptr<boost::barrier>(new boost::barrier(RenderThread::numRenderingThreads));
+	_swapBarrier = std::shared_ptr<Barrier>(new Barrier(RenderThread::numRenderingThreads));
 
 	for(int i=0; i < _windows.size(); i++) {
 		RenderThreadRef thread(new RenderThread(_windows[i], this, _app, _swapBarrier.get(), &_threadsInitializedMutex, &_threadsInitializedCond, &_startRenderingMutex, &_renderingCompleteMutex, &_startRenderingCond, &_renderingCompleteCond));
@@ -280,7 +257,7 @@ void AbstractMVREngine::runApp(AbstractMVRAppRef app)
 
 	setupRenderThreads();
 	// Wait for threads to finish being initialized
-	boost::unique_lock<boost::mutex> threadsInitializedLock(_threadsInitializedMutex);
+	UniqueMutexLock threadsInitializedLock(_threadsInitializedMutex);
 	while (RenderThread::numThreadsInitComplete < _windows.size()) {
 		_threadsInitializedCond.wait(threadsInitializedLock);
 	}
@@ -307,7 +284,7 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 	if (_renderThreads.size() == 0) {
 		setupRenderThreads();
 		// Wait for threads to finish being initialized
-		boost::unique_lock<boost::mutex> threadsInitializedLock(_threadsInitializedMutex);
+		UniqueMutexLock threadsInitializedLock(_threadsInitializedMutex);
 		while (RenderThread::numThreadsInitComplete < _windows.size()) {
 			_threadsInitializedCond.wait(threadsInitializedLock);
 		}
@@ -318,9 +295,9 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 	pollUserInput();
 	updateProjectionForHeadTracking();
 
-	boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-	boost::posix_time::time_duration diff = now - _syncTimeStart;
-	double syncTime = diff.total_seconds();
+	TimeStamp now = getCurrentTime();
+	Duration diff = getDuration(now,_syncTimeStart);
+	double syncTime = getSeconds(diff);
 	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 
 	//std::cout << "Notifying rendering threads to start rendering frame: "<<_frameCount++<<std::endl;
@@ -330,7 +307,7 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 	_startRenderingMutex.unlock();
 
 	// Wait for threads to finish rendering
-	boost::unique_lock<boost::mutex> renderingCompleteLock(_renderingCompleteMutex);
+	UniqueMutexLock renderingCompleteLock(_renderingCompleteMutex);
 	while (RenderThread::numThreadsReceivedRenderingComplete < _windows.size()) {
 		_renderingCompleteCond.wait(renderingCompleteLock);
 	}

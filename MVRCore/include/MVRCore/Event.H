@@ -48,9 +48,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MINVREVENT_H
 
 #include <glm/glm.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <memory>
 #include "MVRCore/StringUtils.H"
+#include "MVRCore/Time.h"
 
 namespace MinVR {
 
@@ -85,14 +85,14 @@ public:
 		EVENTTYPE_MSG = 6              /// stores a std::string
 	};
 
-	Event(const std::string &name, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const double data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const glm::dvec2 &data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const glm::dvec3 &data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const glm::dvec4 &data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const glm::dmat4 &data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &name, const std::string &data, const WindowRef window = nullptr, const int id = -1, const boost::posix_time::ptime &timestamp = boost::posix_time::ptime(boost::posix_time::not_a_date_time));
-	Event(const std::string &eventString, const boost::posix_time::ptime &timestamp); // Create an event from a string in the format of Event::toString();
+	Event(const std::string &name, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const double data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const glm::dvec2 &data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const glm::dvec3 &data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const glm::dvec4 &data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const glm::dmat4 &data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &name, const std::string &data, const WindowRef window = nullptr, const int id = -1, const TimeStamp &timestamp = getCurrentTime());
+	Event(const std::string &eventString, const TimeStamp &timestamp); // Create an event from a string in the format of Event::toString();
 	virtual ~Event();
 	
 	std::string getName() const;
@@ -106,7 +106,7 @@ public:
 	glm::dvec4 get4DData();
 	glm::dmat4 getCoordinateFrameData();
 	std::string getMsgData();
-	boost::posix_time::ptime getTimestamp();
+	TimeStamp getTimestamp();
 
 	bool operator<(Event other) const;
 	bool operator<(EventRef otherRef) const;
@@ -119,7 +119,7 @@ protected:
 	std::string _name;
 	int	_id;
 	WindowRef _window;
-	boost::posix_time::ptime _timestamp;
+	TimeStamp _timestamp;
 	EventType _type;
 	double _data1D;
 	glm::dvec2 _data2D;

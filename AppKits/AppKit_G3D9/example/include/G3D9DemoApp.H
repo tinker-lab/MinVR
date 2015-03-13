@@ -52,11 +52,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "MVRCore/Event.H"
-#include <boost/thread.hpp>
 #include <vector>
 #include "AppKit_G3D9/WindowG3D9.H"
 #include <G3D/G3D.h>
 #include <GLG3D/GLG3D.h>
+#include <map>
 
 class G3D9DemoApp : public MinVR::AbstractMVRApp
 {
@@ -70,13 +70,11 @@ public:
 	void drawGraphics(int threadId, MinVR::AbstractCameraRef camera, MinVR::WindowRef window);
 
 private:
-	void initVBO();
-	boost::thread_specific_ptr<G3D::AttributeArray> _gpuVertex;
-	boost::thread_specific_ptr<G3D::AttributeArray> _gpuNormals;
-	boost::thread_specific_ptr<G3D::AttributeArray> _gpuColors;
-	boost::thread_specific_ptr<G3D::IndexStream> _gpuIndex;
-
-	//boost::thread_specific_ptr<G3D::VertexBuffer> _vbuffer;
+	void initVBO(int threadId);
+	std::map<int, G3D::AttributeArray> _gpuVertex;
+	std::map<int, G3D::AttributeArray> _gpuNormals;
+	std::map<int, G3D::AttributeArray> _gpuColors;
+	std::map<int, G3D::IndexStream> _gpuIndex;
 	
 };
 

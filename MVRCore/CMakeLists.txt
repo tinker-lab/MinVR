@@ -21,6 +21,10 @@ source/InputDeviceVRPNTracker.cpp
 source/RenderThread.cpp
 source/StringUtils.cpp
 source/Rect2D.cpp
+source/io/FileSystem.cpp
+source/Boost/BoostFileSystem.cpp
+source/log/Logger.cpp
+source/Boost/BoostLogger.cpp
 )
 
 set (HEADERFILES
@@ -44,6 +48,14 @@ include/MVRCore/RenderThread.H
 include/MVRCore/StringUtils.H
 include/MVRCore/WindowSettings.H
 include/MVRCore/Rect2D.H
+include/io/FileSystem.h
+include/Boost/BoostFileSystem.h
+include/log/Logger.h
+include/Boost/BoostLogger.h
+include/MVRCore/Time.h
+include/MVRCore/Thread.h
+include/Boost/BoostThread.h
+include/Boost/BoostTime.h
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

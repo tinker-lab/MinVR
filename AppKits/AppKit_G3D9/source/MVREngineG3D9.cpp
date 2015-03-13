@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "AppKit_G3D9/MVREngineG3D9.H"
+#include "log/Logger.h"
 
 namespace MinVR {
 
@@ -115,7 +116,7 @@ void MVREngineG3D9::setupWindowsAndViewports()
 		else {
 			std::stringstream ss;
 			ss << "Fatal error: Unrecognized value for " + winStr + "StereoType: " + stereoStr;
-			BOOST_ASSERT_MSG(false, ss.str().c_str());
+			Logger::getInstance().assertMessage(false, ss.str().c_str());
 		}
 
 
@@ -149,12 +150,12 @@ void MVREngineG3D9::setupWindowsAndViewports()
 			}
 			else if (cameraStr == "Traditional") {
 				// TODO: Implement this for use with systems like desktop haptics.
-				BOOST_ASSERT_MSG(false, "Traditional camera not yet implemented");
+				Logger::getInstance().assertMessage(false, "Traditional camera not yet implemented");
 			}
 			else {
 				std::stringstream ss;
 				ss << "Fatal error: Unrecognized value for " << viewportStr << "CameraType: " << cameraStr;
-				BOOST_ASSERT_MSG(false, ss.str().c_str());
+				Logger::getInstance().assertMessage(false, ss.str().c_str());
 			}
 		}
 

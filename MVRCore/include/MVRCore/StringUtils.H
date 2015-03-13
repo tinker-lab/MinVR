@@ -49,15 +49,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <glm/glm.hpp>
 #include <vector>
-#include <boost/log/trivial.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#define BOOST_ASSERT_MSG_OSTREAM std::cout
-#include <boost/assert.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/attributes/constant.hpp>
 #include <sstream>
+#include <log/Logger.h>
 
 // Can be used to get a quoted version of the value of a particular #define
 #define DEFINE_TO_QUOTED_STR( d ) #d
@@ -161,9 +154,7 @@ static inline bool retypeString(const std::string &str, T &val) {
   std::istringstream is(str.c_str());
   is >> val;
   if (!is) {
-	  boost::log::sources::logger logger;
-	  logger.add_attribute("Tag", boost::log::attributes::constant< std::string >("MinVR Core"));
-	  BOOST_LOG(logger) << "Error retyping string: " <<str;
+	  MinVR::Logger::getInstance().log(std::string("Error retyping string: ") + str, "Tag", "MinVR Core");
 	  return false;
   }
   else return true;
@@ -207,6 +198,10 @@ std::vector<T> insertIntoArray(std::vector<T> inputArray, T newElement,
 std::string trimWhitespace(const std::string& s);
 
 std::string readWholeFile(const std::string& filename);
+
+void replaceAll(std::string& str, const std::string& search, const std::string& replace);
+
+void toUpper(std::string& str);
 
 // checks if input begins with symbol, ignoring whitespace. If so, it
 // returns true and removes symbol and the surrounding whitespace from input

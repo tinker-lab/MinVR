@@ -54,7 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <GLG3D/GKey.h>
 #include <GLG3D/GEvent.h>
 #include <GLG3D/GLFWWindow.h>
-#include <boost/thread.hpp>
+#include "MVRCore/Thread.h"
 
 namespace MinVR {
 
@@ -84,7 +84,7 @@ private:
 	std::string getModName(G3D::GKeyMod mod);
 	std::string getKeyValue(G3D::GKey::Value key, G3D::GKeyMod mod);
 
-	static boost::mutex _RDMUTEX;	
+	static Mutex _RDMUTEX;
 };
 
 } // end namespace

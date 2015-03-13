@@ -45,6 +45,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "AppKit_GLFW/MVREngineGLFW.H"
+#include "MVRCore/Thread.h"
+#include "log/Logger.h"
 
 namespace MinVR {
 
@@ -52,7 +54,7 @@ MVREngineGLFW::MVREngineGLFW() : AbstractMVREngine()
 {
 	glfwSetErrorCallback(error_callback);
 	if (!glfwInit()) {
-		BOOST_ASSERT_MSG(false, "Cannot initialize glfw");
+		Logger::getInstance().assertMessage(false, "Cannot initialize glfw");
 	}
 }
 
@@ -68,7 +70,7 @@ void MVREngineGLFW::runApp(AbstractMVRAppRef app)
 	setupRenderThreads();
 
 	// Wait for threads to finish being initialized
-	boost::unique_lock<boost::mutex> threadsInitializedLock(_threadsInitializedMutex);
+	UniqueMutexLock threadsInitializedLock(_threadsInitializedMutex);
 	while (RenderThread::numThreadsInitComplete < _windows.size()) {
 		_threadsInitializedCond.wait(threadsInitializedLock);
 	}
@@ -106,7 +108,7 @@ WindowRef MVREngineGLFW::createWindow(WindowSettingsRef settings, std::vector<Ab
 
 void MVREngineGLFW::error_callback(int error, const char* description)
 {
-	BOOST_ASSERT_MSG(false, description);
+	Logger::getInstance().assertMessage(false, description);
 }
 
 } // end namespace
