@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/source/log/Logger.cpp
+File: MinVR/MVRCore/source/log/ThreadSafeLogger.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,42 +41,34 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#include <log/Logger.h>
-#ifdef USE_BOOST
-#include <Boost/BoostLogger.h>
-#else
-#include <log/BasicLogger.h>
 #include <log/ThreadSafeLogger.h>
-#include <log/CompositeLogger.h>
-#include <fstream>
-#endif
 
 namespace MinVR {
 
-Logger::~Logger() {
-	// TODO Auto-generated destructor stub
+ThreadSafeLogger::ThreadSafeLogger(LoggerRef logger) : _logger(logger) {
 }
 
-inline Logger* getLogger()
-{
-#ifdef USE_BOOST
-	return new BoostLogger()
-#else
-	CompositeLogger* compositeLogger = new CompositeLogger();
-	compositeLogger->addLogger(LoggerRef(new BasicLogger()));
-	compositeLogger->addLogger(LoggerRef(new BasicLogger(std::shared_ptr< std::ostream >(new std::ofstream("log.txt")))));
-	return new ThreadSafeLogger(LoggerRef(compositeLogger));
-#endif
+ThreadSafeLogger::~ThreadSafeLogger() {
 }
 
-LoggerRef Logger::_instance = LoggerRef(getLogger());
-
-Logger& Logger::getInstance() {
-	return *_instance;
+void ThreadSafeLogger::init() {
+	_mutex.lock();
+	_logger->init();
+	_mutex.unlock();
 }
 
-void Logger::setInstance(LoggerRef logger) {
-	_instance = logger;
+void ThreadSafeLogger::log(const std::string& message,
+		const std::string& attributeName, const std::string& attributeValue) {
+	_mutex.lock();
+	_logger->log(message, attributeName, attributeValue);
+	_mutex.unlock();
+}
+
+void ThreadSafeLogger::assertMessage(bool expression,
+		const std::string& message) {
+	_mutex.lock();
+	_logger->assertMessage(expression, message);
+	_mutex.unlock();
 }
 
 } /* namespace MinVR */

@@ -14,6 +14,7 @@ set(MINVR_VERSION_FULL "${MINVR_VERSION}.${MINVR_VERSION_PATCH}${MINVR_VERSION_E
 option(USE_VRPN "Enable events from vrpn devices" ON)
 option(USE_TUIO "Enable generation of events from a tuio device" OFF)
 option(USE_SPACENAV "Enable generation of events from the 3dconnexion SpaceNavigator device" OFF)
+option(USE_BOOST "Forces the application to use Boost" OFF)
 
 option(USE_APPKIT_GLFW "Enable to use the GLFW app kit" ON)
 option(USE_APPKIT_G3D9 "Enable to use the G3D9 app kit" OFF)
@@ -67,6 +68,7 @@ if (USE_VRPN)
 				URL http://www.cs.unc.edu/Research/vrpn/downloads/vrpn_07_30.zip
 				INSTALL_DIR ${vrpn_INSTALL_DIR}
 				CMAKE_ARGS ${vrpn_CMAKE_ARGS}
+				UPDATE_COMMAND ""
 		 )		 
 		set_property(TARGET vrpn PROPERTY FOLDER "Dependencies")
 		set(VRPN_INCLUDE_DIR ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
@@ -110,6 +112,7 @@ if (USE_TUIO)
 				INSTALL_DIR ${tuio_INSTALL_DIR}
 				CMAKE_ARGS ${tuio_CMAKE_ARGS}
 				PATCH_COMMAND ${tuio_PATCH}
+				UPDATE_COMMAND ""
 		 )		 
 		set_property(TARGET TUIO PROPERTY FOLDER "Dependencies")
 		set(TUIO_INCLUDE_DIR ${tuio_INSTALL_DIR}/include CACHE INTERNAL "Directory of TUIO header files")
@@ -137,57 +140,60 @@ find_package(OpenGL REQUIRED)
 set(LIBS_ALL ${LIBS_ALL} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 include_directories(${OPENGL_INCLUDE_DIR})
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0")
-find_package(Boost 1.55.0 COMPONENTS chrono date_time system thread log log_setup filesystem)
-if(Boost_FOUND)
-    message("Using installed version of Boost")
-	set(BUILD_BOOST OFF)
-elseif(BUILD_DEPENDENCIES)
-	set(BUILD_BOOST ON)
-     set(Boost_Download_Dir ${CMAKE_SOURCE_DIR}/dependencies/boost)
-	 make_directory(${Boost_Download_Dir})
-     message("   Library will be built from source in ${Boost_Download_Dir}.")
-     
-     include(ExternalProject)
-     set(boost_PREFIX "${Boost_Download_Dir}")
-     set(boost_INSTALL_DIR "${MINVR_INSTALL_DIR}/boost")
-     if (MSVC)
-        set(boost_CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap.bat)
-        set(boost_BUILD_COMMAND <SOURCE_DIR>/b2 install --prefix=${boost_INSTALL_DIR} --with-thread --with-chrono --with-date_time --with-log --with-filesystem toolset=msvc-10.0 link=static runtime-link=shared threading=multi address-model=64 variant=debug,release)
-     else()
-        set(boost_CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap.sh cxxflags="-std=c++11 -stdlib=libc++" --with-toolset=clang)
-        set(boost_BUILD_COMMAND <SOURCE_DIR>/b2 install --prefix=${boost_INSTALL_DIR} --with-thread --with-chrono --with-date_time --with-log --with-filesystem toolset=clang cxxflags=-std=c++11 cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++ link=static runtime-link=shared threading=multi address-model=64 variant=release)
-     endif()
-     ExternalProject_add(boost
-     		  PREFIX ${boost_PREFIX}
-			  URL http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2
-     		  URL_MD5 d6eef4b4cacb2183f2bf265a5a03a354
-     		  CONFIGURE_COMMAND ${boost_CONFIGURE_COMMAND}
-              BUILD_COMMAND ${boost_BUILD_COMMAND}
-     		  INSTALL_DIR ${boost_INSTALL_DIR}
-			  INSTALL_COMMAND ""
-     		  BUILD_IN_SOURCE 1
-     )
-	 
-    set_property(TARGET boost PROPERTY FOLDER "Dependencies")
-    
-    set( Boost_DIR ${boost_INSTALL_DIR} CACHE PATH "Boost Root Directory")
-    set( Boost_LIBRARY_DIRS ${boost_INSTALL_DIR}/lib CACHE PATH "Boost Library directory" FORCE)
-    
-    if(MSVC)
-        set( Boost_INCLUDE_DIR ${boost_INSTALL_DIR}/include/boost-1_55 CACHE PATH "Boost Include directory" FORCE)
-        set( Boost_LIBRARIES optimized ${Boost_LIBRARY_DIRS}/libboost_chrono-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_date_time-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_system-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_thread-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_log_setup-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_log-vc100-mt-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_chrono-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_date_time-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_system-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_thread-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_log_setup-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_log-vc100-mt-gd-1_55.lib CACHE INTERNAL "Boost libraries needed to compile MINVR apps")
-    else()
-        set( Boost_INCLUDE_DIR ${boost_INSTALL_DIR}/include CACHE PATH "Boost Include directory" FORCE)
-        set( Boost_LIBRARIES ${Boost_LIBRARY_DIRS}/libboost_chrono.a ${Boost_LIBRARY_DIRS}/libboost_date_time.a ${Boost_LIBRARY_DIRS}/libboost_system.a ${Boost_LIBRARY_DIRS}/libboost_thread.a ${Boost_LIBRARY_DIRS}/libboost_filesystem.a ${Boost_LIBRARY_DIRS}/libboost_log_setup.a ${Boost_LIBRARY_DIRS}/libboost_log.a CACHE INTERNAL "Boost libraries needed to compile MINVR apps")
-    endif()
-else ()
-	message("   Set the BOOST_ROOT env var and re-configure, or set BUILD_BOOST to ON to download and build boost automatically.")
+if(USE_BOOST)
+	set(Boost_USE_STATIC_LIBS ON)
+	set(Boost_USE_MULTITHREADED ON)  
+	set(Boost_USE_STATIC_RUNTIME OFF)
+	set(Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0")
+	find_package(Boost 1.55.0 COMPONENTS chrono date_time system thread log log_setup filesystem)
+	if(Boost_FOUND)
+	    message("Using installed version of Boost")
+	    set(BUILD_BOOST OFF)
+	elseif(BUILD_DEPENDENCIES)
+		set(BUILD_BOOST ON)
+	     set(Boost_Download_Dir ${CMAKE_SOURCE_DIR}/dependencies/boost)
+		 make_directory(${Boost_Download_Dir})
+	     message("   Library will be built from source in ${Boost_Download_Dir}.")
+	     
+	     include(ExternalProject)
+	     set(boost_PREFIX "${Boost_Download_Dir}")
+	     set(boost_INSTALL_DIR "${MINVR_INSTALL_DIR}/boost")
+	     if (MSVC)
+	        set(boost_CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap.bat)
+	        set(boost_BUILD_COMMAND <SOURCE_DIR>/b2 install --prefix=${boost_INSTALL_DIR} --with-thread --with-chrono --with-date_time --with-log --with-filesystem toolset=msvc-10.0 link=static runtime-link=shared threading=multi address-model=64 variant=debug,release)
+	     else()
+	        set(boost_CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap.sh cxxflags="-std=c++11 -stdlib=libc++" --with-toolset=clang)
+	        set(boost_BUILD_COMMAND <SOURCE_DIR>/b2 install --prefix=${boost_INSTALL_DIR} --with-thread --with-chrono --with-date_time --with-log --with-filesystem toolset=clang cxxflags=-std=c++11 cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++ link=static runtime-link=shared threading=multi address-model=64 variant=release)
+	     endif()
+	     ExternalProject_add(boost
+	     		  PREFIX ${boost_PREFIX}
+				  URL http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2
+	     		  URL_MD5 d6eef4b4cacb2183f2bf265a5a03a354
+	     		  CONFIGURE_COMMAND ${boost_CONFIGURE_COMMAND}
+	              BUILD_COMMAND ${boost_BUILD_COMMAND}
+	     		  INSTALL_DIR ${boost_INSTALL_DIR}
+				  INSTALL_COMMAND ""
+	     		  BUILD_IN_SOURCE 1
+				  UPDATE_COMMAND ""
+	     )
+		 
+	    set_property(TARGET boost PROPERTY FOLDER "Dependencies")
+	    
+	    set( Boost_DIR ${boost_INSTALL_DIR} CACHE PATH "Boost Root Directory")
+	    set( Boost_LIBRARY_DIRS ${boost_INSTALL_DIR}/lib CACHE PATH "Boost Library directory" FORCE)
+	    
+	    if(MSVC)
+	        set( Boost_INCLUDE_DIR ${boost_INSTALL_DIR}/include/boost-1_55 CACHE PATH "Boost Include directory" FORCE)
+	        set( Boost_LIBRARIES optimized ${Boost_LIBRARY_DIRS}/libboost_chrono-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_date_time-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_system-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_thread-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_log_setup-vc100-mt-1_55.lib optimized ${Boost_LIBRARY_DIRS}/libboost_log-vc100-mt-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_chrono-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_date_time-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_system-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_thread-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_log_setup-vc100-mt-gd-1_55.lib debug ${Boost_LIBRARY_DIRS}/libboost_log-vc100-mt-gd-1_55.lib CACHE INTERNAL "Boost libraries needed to compile MINVR apps")
+	    else()
+	        set( Boost_INCLUDE_DIR ${boost_INSTALL_DIR}/include CACHE PATH "Boost Include directory" FORCE)
+	        set( Boost_LIBRARIES ${Boost_LIBRARY_DIRS}/libboost_chrono.a ${Boost_LIBRARY_DIRS}/libboost_date_time.a ${Boost_LIBRARY_DIRS}/libboost_system.a ${Boost_LIBRARY_DIRS}/libboost_thread.a ${Boost_LIBRARY_DIRS}/libboost_filesystem.a ${Boost_LIBRARY_DIRS}/libboost_log_setup.a ${Boost_LIBRARY_DIRS}/libboost_log.a CACHE INTERNAL "Boost libraries needed to compile MINVR apps")
+	    endif()
+	else ()
+		message("   Set the BOOST_ROOT env var and re-configure, or set BUILD_BOOST to ON to download and build boost automatically.")
+	endif()
+	include_directories(${Boost_INCLUDE_DIR})
 endif()
-include_directories(${Boost_INCLUDE_DIR})
 
 add_definitions(-DGLM_SWIZZLE)
 include_directories(dependencies/glm)

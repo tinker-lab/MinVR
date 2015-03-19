@@ -29,12 +29,25 @@ gen:
     ifeq ($(ARCH), linux)
 	  mkdir -p ./build/Release
 	  mkdir -p ./build/Debug	  
-	  cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/install ../../
-	  cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(CURDIR)/install ../../
+	  cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../../
+	  cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../../
     else ifeq ($(ARCH), WIN32)
-	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/install ../ -G "Visual Studio 10 Win64"
+	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install ../ -G "Visual Studio 10 Win64"
     else ifeq ($(ARCH), OSX)
-	  cd ./build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/install ../ -G Xcode
+	  cd ./build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../ -G Xcode
+    endif
+
+use_boost:
+	mkdir -p ./build
+    ifeq ($(ARCH), linux)
+	  mkdir -p ./build/Release
+	  mkdir -p ./build/Debug	  
+	  cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../../
+	  cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../../
+    else ifeq ($(ARCH), WIN32)
+	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install -DUSE_BOOST=ON ../ -G "Visual Studio 10 Win64"
+    else ifeq ($(ARCH), OSX)
+	  cd ./build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../ -G Xcode
     endif
 
 debug:
@@ -53,21 +66,13 @@ release opt:
 
 install:
     ifeq ($(ARCH), linux) 
-	  cd ./build/Debug; make install
-	  cd ./build/Release; make install
+	  cd ./build/Debug; make install -j$(NPROC)
+	  cd ./build/Release; make install -j$(NPROC)
     else
 	  @echo "Open the project file to run make install on this architecture."
     endif
 
-linux-install:
-    ifeq ($(ARCH), linux) 
-	  cd ./build/Debug; make install
-	  cd ./build/Release; make install
-    else
-	  @echo "Open the project file to run make install on this architecture."
-    endif
-
-eclipse: linux-install
+eclipse: install
     ifeq ($(ARCH), linux)
 	  mkdir -p ../$(CUR_DIR_NAME)_build
 	  cd ../$(CUR_DIR_NAME)_build; cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_DEPENDENCIES=OFF -DCMAKE_INSTALL_PREFIX=$(CURDIR)/install ../$(CUR_DIR_NAME)/ -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_ECLIPSE_VERSION=4.3

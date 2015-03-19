@@ -37,7 +37,7 @@ endif()
 set(glfw_PREFIX "${glfw_checkout_Dir}")
 set(glfw_INSTALL_DIR "${MINVR_INSTALL_DIR}/glfw")
 if (BUILD_DEPENDENCIES)
-  set(glfw_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${glfw_INSTALL_DIR} -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON)
+  set(glfw_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${glfw_INSTALL_DIR} -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -DGLFW_BUILD_DOCS=OFF)
   set(glfw_DIR "${glfw_INSTALL_DIR}")
 
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -46,7 +46,7 @@ if (BUILD_DEPENDENCIES)
 
    ExternalProject_add(glfw
 		PREFIX ${glfw_PREFIX}
-		GIT_REPOSITORY https://github.com/bretjackson/glfw.git
+		GIT_REPOSITORY https://github.com/ivlab/glfw.git
 		GIT_TAG gpu-affinity
 		INSTALL_DIR ${glfw_INSTALL_DIR}
 		CMAKE_ARGS ${glfw_CMAKE_ARGS}
@@ -131,7 +131,12 @@ endif()
 #------------------------------------------
 add_library ( ${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES} )
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "App Kits")
-add_dependencies(${PROJECT_NAME} boost glfw MVRCore)
+if(USE_BOOST)
+	add_dependencies(${PROJECT_NAME} boost glfw MVRCore)
+else()
+	add_dependencies(${PROJECT_NAME} glfw MVRCore)
+endif()
+
 
 #------------------------------------------
 # Install Target

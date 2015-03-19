@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/source/log/Logger.cpp
+File: MinVR/MVRCore/source/log/BasicLogger.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,42 +41,45 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#include <log/Logger.h>
-#ifdef USE_BOOST
-#include <Boost/BoostLogger.h>
-#else
 #include <log/BasicLogger.h>
-#include <log/ThreadSafeLogger.h>
-#include <log/CompositeLogger.h>
-#include <fstream>
-#endif
+#include <assert.h>
 
 namespace MinVR {
 
-Logger::~Logger() {
-	// TODO Auto-generated destructor stub
+BasicLogger::BasicLogger(std::shared_ptr< std::ostream > stream) : _ostreamPtr(stream) {
+	_ostream = _ostreamPtr.get();
 }
 
-inline Logger* getLogger()
+BasicLogger::BasicLogger(std::ostream *stream) : _ostream(stream) {
+}
+
+BasicLogger::~BasicLogger() {
+}
+
+void BasicLogger::init()
 {
-#ifdef USE_BOOST
-	return new BoostLogger()
-#else
-	CompositeLogger* compositeLogger = new CompositeLogger();
-	compositeLogger->addLogger(LoggerRef(new BasicLogger()));
-	compositeLogger->addLogger(LoggerRef(new BasicLogger(std::shared_ptr< std::ostream >(new std::ofstream("log.txt")))));
-	return new ThreadSafeLogger(LoggerRef(compositeLogger));
-#endif
 }
 
-LoggerRef Logger::_instance = LoggerRef(getLogger());
-
-Logger& Logger::getInstance() {
-	return *_instance;
+void BasicLogger::log(const std::string& message, const std::string& attributeName, const std::string& attributeValue)
+{
+	std::ostream& stream = getStream();
+	stream << attributeName << " " << attributeValue << ": " << message << std::endl;
+	stream.flush();
 }
 
-void Logger::setInstance(LoggerRef logger) {
-	_instance = logger;
+void BasicLogger::assertMessage(bool expression, const std::string& message)
+{
+	if (!expression)
+	{
+		assert(expression);
+		std::ostream& stream = getStream();
+		stream << "Assert: " << message << std::endl;
+		stream.flush();
+	}
+}
+
+std::ostream& BasicLogger::getStream() {
+	return *_ostream;
 }
 
 } /* namespace MinVR */

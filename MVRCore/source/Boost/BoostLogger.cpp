@@ -85,7 +85,7 @@ void MinVR::BoostLogger::init() {
     // Create a backend and attach a couple of streams to it
     boost::shared_ptr<boost::log::sinks::text_ostream_backend> backend = boost::make_shared<boost::log::sinks::text_ostream_backend>();
     backend->add_stream(boost::shared_ptr< std::ostream >(&std::cout, boost::empty_deleter()));
-    backend->add_stream(boost::shared_ptr< std::ostream >(new std::ofstream("log.txt")));
+    backend->add_stream(boost::shared_ptr< std::ostream >(new std::ofstream("log.txt", std::ios::out )));
 
     // Enable auto-flushing after each log record written
     backend->auto_flush(true);

@@ -45,6 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "MVRCore/AbstractMVREngine.H"
+#include <log/BasicLogger.h>
+#include <log/ThreadSafeLogger.h>
+#include <log/CompositeLogger.h>
+#include <fstream>
 
 namespace MinVR {
 
@@ -60,6 +64,7 @@ AbstractMVREngine::~AbstractMVREngine()
 void AbstractMVREngine::initializeLogging()
 {
 	MinVR::Logger::getInstance().init();
+	MinVR::Logger::getInstance().log("started logger", "tag", "MVRCore");
 }
 
 void AbstractMVREngine::init(int argc, char **argv)

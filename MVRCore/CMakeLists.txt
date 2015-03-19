@@ -22,9 +22,11 @@ source/RenderThread.cpp
 source/StringUtils.cpp
 source/Rect2D.cpp
 source/io/FileSystem.cpp
-source/Boost/BoostFileSystem.cpp
 source/log/Logger.cpp
-source/Boost/BoostLogger.cpp
+source/io/BasicFileSystem.cpp
+source/log/BasicLogger.cpp
+source/log/ThreadSafeLogger.cpp
+source/log/CompositeLogger.cpp
 )
 
 set (HEADERFILES
@@ -49,14 +51,29 @@ include/MVRCore/StringUtils.H
 include/MVRCore/WindowSettings.H
 include/MVRCore/Rect2D.H
 include/io/FileSystem.h
-include/Boost/BoostFileSystem.h
 include/log/Logger.h
-include/Boost/BoostLogger.h
 include/MVRCore/Time.h
 include/MVRCore/Thread.h
-include/Boost/BoostThread.h
-include/Boost/BoostTime.h
+include/io/BasicFileSystem.h
+include/log/BasicLogger.h
+include/log/ThreadSafeLogger.h
+include/log/CompositeLogger.h
 )
+
+if (USE_BOOST)
+	set (SOURCEFILES ${SOURCEFILES}
+	source/Boost/BoostLogger.cpp
+	source/io/BasicFileSystem.cpp
+	source/Boost/BoostFileSystem.cpp
+	)
+
+	set (HEADERFILES ${HEADERFILES}
+	include/Boost/BoostFileSystem.h
+	include/Boost/BoostLogger.h
+	include/Boost/BoostThread.h
+	include/Boost/BoostTime.h
+	)
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	# Mac OS X specific code

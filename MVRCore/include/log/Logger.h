@@ -45,17 +45,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LOGGER_H_
 
 #include <string>
+#include <memory>
 
 namespace MinVR {
+
+class Logger;
+typedef std::shared_ptr<Logger> LoggerRef;
 
 class Logger {
 public:
 	virtual ~Logger();
 
 	static Logger& getInstance();
+	static void setInstance(LoggerRef logger);
 	virtual void init() = 0;
 	virtual void log(const std::string& message, const std::string& attributeName, const std::string& attributeValue) = 0;
 	virtual void assertMessage(bool expression, const std::string& message) = 0;
+private:
+	static LoggerRef _instance;
 };
 
 } /* namespace MinVR */

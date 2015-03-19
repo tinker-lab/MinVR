@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/source/log/Logger.cpp
+File: MinVR/MVRCore/include/log/CompositeLogger.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,42 +41,26 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
+#ifndef COMPOSITELOGGER_H_
+#define COMPOSITELOGGER_H_
+
 #include <log/Logger.h>
-#ifdef USE_BOOST
-#include <Boost/BoostLogger.h>
-#else
-#include <log/BasicLogger.h>
-#include <log/ThreadSafeLogger.h>
-#include <log/CompositeLogger.h>
-#include <fstream>
-#endif
+#include <vector>
 
 namespace MinVR {
 
-Logger::~Logger() {
-	// TODO Auto-generated destructor stub
-}
-
-inline Logger* getLogger()
-{
-#ifdef USE_BOOST
-	return new BoostLogger()
-#else
-	CompositeLogger* compositeLogger = new CompositeLogger();
-	compositeLogger->addLogger(LoggerRef(new BasicLogger()));
-	compositeLogger->addLogger(LoggerRef(new BasicLogger(std::shared_ptr< std::ostream >(new std::ofstream("log.txt")))));
-	return new ThreadSafeLogger(LoggerRef(compositeLogger));
-#endif
-}
-
-LoggerRef Logger::_instance = LoggerRef(getLogger());
-
-Logger& Logger::getInstance() {
-	return *_instance;
-}
-
-void Logger::setInstance(LoggerRef logger) {
-	_instance = logger;
-}
+class CompositeLogger : public Logger {
+public:
+	CompositeLogger();
+	virtual ~CompositeLogger();
+	void init();
+	void log(const std::string& message, const std::string& attributeName, const std::string& attributeValue);
+	void assertMessage(bool expression, const std::string& message);
+	void addLogger(LoggerRef logger);
+private:
+	std::vector<LoggerRef> _loggers;
+};
 
 } /* namespace MinVR */
+
+#endif /* COMPOSITELOGGER_H_ */

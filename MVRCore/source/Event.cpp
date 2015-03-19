@@ -50,6 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractWindow.H"
 #include "log/Logger.h"
 #include <sstream>
+#include <iomanip>
 
 namespace MinVR {
 	

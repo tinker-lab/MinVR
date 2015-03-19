@@ -42,7 +42,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 #include <io/FileSystem.h>
+#ifdef USE_BOOST
 #include <Boost/BoostFileSystem.h>
+#else
+#include <io/BasicFileSystem.h>
+#endif
 
 #include <memory>
 
@@ -53,7 +57,13 @@ FileSystem::~FileSystem() {
 }
 
 FileSystem& FileSystem::getInstance() {
-	static std::auto_ptr<FileSystem> instance = std::auto_ptr<FileSystem>(new BoostFileSystem());
+	FileSystem* fileSystem;
+#ifdef USE_BOOST
+	fileSystem = new BoostFileSystem();
+#else
+	fileSystem = new BasicFileSystem();
+#endif
+	static std::auto_ptr<FileSystem> instance = std::auto_ptr<FileSystem>(fileSystem);
 	return *instance;
 }
 

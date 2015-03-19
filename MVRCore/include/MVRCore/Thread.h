@@ -44,6 +44,57 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef THREAD_H_
 #define THREAD_H_
 
+#ifdef USE_BOOST
 #include "Boost/BoostThread.h"
+#else
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#endif
+
+#ifndef USE_BOOST
+namespace MinVR
+{
+
+typedef std::mutex Mutex;
+typedef std::condition_variable ConditionVariable;
+typedef std::thread Thread;
+typedef std::unique_lock<Mutex> UniqueMutexLock;
+
+class Barrier
+{
+public:
+	Barrier(unsigned int numThreads) : _numThreads(numThreads), m_count(numThreads), m_generation(0) {}
+	~Barrier() {}
+
+    bool wait()
+    {
+      UniqueMutexLock lock(m_mutex);
+      unsigned int gen = m_generation;
+
+      if (--m_count == 0)
+      {
+        m_generation++;
+        m_count = _numThreads;
+        m_cond.notify_all();
+        return true;
+      }
+
+      while (gen == m_generation)
+        m_cond.wait(lock);
+      return false;
+    }
+
+
+private:
+    unsigned int _numThreads;
+    Mutex m_mutex;
+    ConditionVariable m_cond;
+    unsigned int m_count;
+    unsigned int m_generation;
+};
+
+}
+#endif
 
 #endif /* THREAD_H_ */

@@ -2,10 +2,10 @@ find_path(LIBVRPN_INCLUDE_DIR vrpn_Tracker.h
           HINTS $ENV{VRPN_INCLUDE_DIR} ${VRPN_INCLUDE_DIR} $ENV{G}/src/vrpn/7.30/vrpn )
 
 find_library(LIBVRPN_OPT_LIBRARY NAMES libvrpn.a vrpn.lib vrpn
-          HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/${GBUILDSTR}/Release ${VRPN_LIB_DIR})
+          HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/${GBUILDSTR}/Release ${VRPN_LIB_DIR} HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/linux-x86_64-g++-4.8/Release)
 
 find_library(LIBVRPN_DEBUG_LIBRARY NAMES libvrpn.a vrpn.lib vrpn
-          HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/${GBUILDSTR}/Debug ${VRPN_LIB_DIR})
+          HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/${GBUILDSTR}/Debug ${VRPN_LIB_DIR}  HINTS $ENV{G}/src/vrpn/7.30/vrpn/build/linux-x86_64-g++-4.8/Debug)
 
 set(LIBVRPN_INCLUDE_DIRS ${LIBVRPN_INCLUDE_DIR} )
 

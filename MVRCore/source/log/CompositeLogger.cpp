@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/source/log/Logger.cpp
+File: MinVR/MVRCore/source/log/CompositeLogger.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,42 +41,38 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#include <log/Logger.h>
-#ifdef USE_BOOST
-#include <Boost/BoostLogger.h>
-#else
-#include <log/BasicLogger.h>
-#include <log/ThreadSafeLogger.h>
 #include <log/CompositeLogger.h>
-#include <fstream>
-#endif
 
 namespace MinVR {
 
-Logger::~Logger() {
-	// TODO Auto-generated destructor stub
+CompositeLogger::CompositeLogger() {
+
 }
 
-inline Logger* getLogger()
-{
-#ifdef USE_BOOST
-	return new BoostLogger()
-#else
-	CompositeLogger* compositeLogger = new CompositeLogger();
-	compositeLogger->addLogger(LoggerRef(new BasicLogger()));
-	compositeLogger->addLogger(LoggerRef(new BasicLogger(std::shared_ptr< std::ostream >(new std::ofstream("log.txt")))));
-	return new ThreadSafeLogger(LoggerRef(compositeLogger));
-#endif
+CompositeLogger::~CompositeLogger() {
 }
 
-LoggerRef Logger::_instance = LoggerRef(getLogger());
-
-Logger& Logger::getInstance() {
-	return *_instance;
+void CompositeLogger::init() {
 }
 
-void Logger::setInstance(LoggerRef logger) {
-	_instance = logger;
+void CompositeLogger::log(const std::string& message,
+		const std::string& attributeName, const std::string& attributeValue) {
+	for (int f = 0; f < _loggers.size(); f++)
+	{
+		_loggers[f]->log(message, attributeName, attributeValue);
+	}
+}
+
+void CompositeLogger::assertMessage(bool expression,
+		const std::string& message) {
+	for (int f = 0; f < _loggers.size(); f++)
+	{
+		_loggers[f]->assertMessage(expression, message);
+	}
+}
+
+void CompositeLogger::addLogger(LoggerRef logger) {
+	_loggers.push_back(logger);
 }
 
 } /* namespace MinVR */
