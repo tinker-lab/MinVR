@@ -32,7 +32,7 @@ gen:
 	  cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../../
 	  cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../../
     else ifeq ($(ARCH), WIN32)
-	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install ../ -G "Visual Studio 10 Win64"
+	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install ../ -G "Visual Studio 12 Win64"
     else ifeq ($(ARCH), OSX)
 	  cd ./build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install ../ -G Xcode
     endif
