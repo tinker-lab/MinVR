@@ -44,6 +44,10 @@ if (BUILD_DEPENDENCIES)
 		set(glfw_CMAKE_ARGS ${glfw_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD="c++11" -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY="libc++")
    endif()
 
+   if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+		set(GIT_EXECUTABLE "C:/Program Files (x86)/Git/bin/git.exe")
+   endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+   
    ExternalProject_add(glfw
 		PREFIX ${glfw_PREFIX}
 		GIT_REPOSITORY https://github.com/ivlab/glfw.git
