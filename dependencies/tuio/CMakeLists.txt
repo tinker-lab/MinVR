@@ -1,13 +1,13 @@
 cmake_minimum_required (VERSION 2.8)
 project (TUIO)
 
-aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES)
-aux_source_directory(${CMAKE_SOURCE_DIR}/ip/ SOURCEFILES)
-aux_source_directory(${CMAKE_SOURCE_DIR}/osc/ SOURCEFILES)
+aux_source_directory(${CMAKE_SOURCE_DIR}/TUIO SOURCEFILES)
+aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/ SOURCEFILES)
+aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/osc/ SOURCEFILES)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  aux_source_directory(${CMAKE_SOURCE_DIR}/ip/win32/ SOURCEFILES)
+  aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/win32/ SOURCEFILES)
 else()
-  aux_source_directory(${CMAKE_SOURCE_DIR}/ip/posix/ SOURCEFILES)
+  aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/posix/ SOURCEFILES)
 endif()  
 
 set (CMAKE_VERBOSE_MAKEFILE TRUE)
@@ -15,22 +15,36 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 # Used for compiling in subdirectories of the project
 include_directories (
   .
+  ${CMAKE_SOURCE_DIR}/oscpack
 )
 
 
 ############################################################
 #OS Specific flags should go here
 ############################################################
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "gnu++98")
-    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
-	add_definitions("-DOSC_HOST_LITTLE_ENDIAN")
+  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+  #set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++")
+endif()
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  # Linux specific code
+  add_definitions("-DOSC_HOST_LITTLE_ENDIAN")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  # Windows specific code
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 ############################################################
 #Finally add all the targets here
 ############################################################
 
-add_library(TUIO ${SOURCEFILES})
+add_library(TUIO SHARED ${SOURCEFILES})
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TUIO/ DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/ip DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/osc DESTINATION "${CMAKE_INSTALL_PREFIX}/include")

@@ -14,7 +14,6 @@ source/ConfigVal.cpp
 source/DataFileUtils.cpp
 source/Event.cpp
 source/InputDeviceSpaceNav.cpp
-source/InputDeviceTUIOClient.cpp
 source/InputDeviceVRPNAnalog.cpp
 source/InputDeviceVRPNButton.cpp
 source/InputDeviceVRPNTracker.cpp
@@ -42,7 +41,6 @@ include/MVRCore/ConfigVal.H
 include/MVRCore/DataFileUtils.H
 include/MVRCore/Event.H
 include/MVRCore/InputDeviceSpaceNav.H
-include/MVRCore/InputDeviceTUIOClient.H
 include/MVRCore/InputDeviceVRPNAnalog.H
 include/MVRCore/InputDeviceVRPNButton.H
 include/MVRCore/InputDeviceVRPNTracker.H
@@ -58,6 +56,7 @@ include/io/BasicFileSystem.h
 include/log/BasicLogger.h
 include/log/ThreadSafeLogger.h
 include/log/CompositeLogger.h
+include/MVRCore/DeviceFactory.h
 )
 
 if (USE_BOOST)

@@ -49,6 +49,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <log/ThreadSafeLogger.h>
 #include <log/CompositeLogger.h>
 #include <fstream>
+#include <dlfcn.h>
+#include "MVRCore/DeviceFactory.h"
+#include <io/FileSystem.h>
 
 namespace MinVR {
 
@@ -200,6 +203,32 @@ void AbstractMVREngine::setupWindowsAndViewports()
 
 void AbstractMVREngine::setupInputDevices()
 {
+	// load the triangle library
+
+	void* pluginLib = dlopen(FileSystem::getInstance().concatPath(INSTALLPATH, "plugins/libMinVR_TUIO.so").c_str(), RTLD_NOW);//RTLD_LAZY);
+	if (!pluginLib) {
+		std::cerr << "Cannot load library: " << dlerror() << '\n';
+		exit(1);
+	}
+
+	// reset errors
+	dlerror();
+
+	// load the symbols
+	typedef MinVR::DeviceFactoryRef create_t();
+	create_t* create_factory = (create_t*) dlsym(pluginLib, "getDeviceFactory");
+	const char* dlsym_error = dlerror();
+	if (dlsym_error) {
+		std::cerr << "Cannot load symbol create: " << dlsym_error << '\n';
+		exit(1);
+	}
+
+	// reset errors
+	dlerror();
+
+	MinVR::DeviceFactoryRef factory = create_factory();
+
+
 	std::string devicesFile = _configMap->get("InputDevicesFile", "");
 	if (devicesFile != "") {
 		ConfigMapRef devicesMap(new ConfigMap(DataFileUtils::findDataFile(devicesFile)));
@@ -218,8 +247,8 @@ void AbstractMVREngine::setupInputDevices()
 			else if (type == "InputDeviceVRPNTracker") {
 				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceVRPNTracker(devnames[i], devicesMap)));
 			}
-			else if (type == "InputDeviceTUIOClient") { 
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceTUIOClient(devnames[i], devicesMap)));
+			else if (type == "InputDeviceTUIOClient") {
+				_inputDevices.push_back(factory->createInputDevice(type, devnames[i], devicesMap));
 			}
 			else if (type == "InputDeviceSpaceNav") {
 				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceSpaceNav(devnames[i], devicesMap)));
@@ -302,7 +331,7 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 
 	TimeStamp now = getCurrentTime();
 	Duration diff = getDuration(now,_syncTimeStart);
-	double syncTime = getSeconds(diff);
+	double syncTime = getDurationSeconds(diff);
 	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 
 	//std::cout << "Notifying rendering threads to start rendering frame: "<<_frameCount++<<std::endl;

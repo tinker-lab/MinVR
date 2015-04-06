@@ -4,7 +4,7 @@ This file is part of the MinVR Open Source Project, which is developed and
 maintained collaboratively by the University of Minnesota's Interactive 
 Visualization Lab and the Brown University Visualization Research Lab.
 
-File: MinVR/MVRCore/include/MVRCore/InputDeviceTUIOClient.H
+File: MinVR/Plugin/Devices/TUIO/InputDeviceTUIOClient.H
 
 Original Author(s) of this File: 
 	Daniel Keefe, 2009, University of Minnesota (originally VRG3D/TUIOEvents.H)

@@ -5,7 +5,7 @@ Description           A standard non-VR desktop window
 
 # Name of a configuration file for input devices (leave blank
 # for no devices other than keyboard and mouse)
-InputDevicesFile      
+InputDevicesFile      desktop-devices.cfg
 
 InterOcularDistance		0.2083
 InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))

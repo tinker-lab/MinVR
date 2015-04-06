@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/include/MVRCore/Time.h
+File: MinVR/Plugin/Devices/TUIO/TuioDeviceFactory.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,28 +41,43 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef TIME_H_
-#define TIME_H_
 
-#ifdef USE_BOOST
-#include "Boost/BoostTime.h"
-#else
-#include <chrono>
-#endif
+#include <TuioDeviceFactory.h>
+#include "InputDeviceTUIOClient.H"
 
-#ifndef USE_BOOST
-namespace MinVR
-{
+namespace MinVR {
 
-#define getCurrentTime() std::chrono::high_resolution_clock::now()
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> TimeStamp;
-typedef std::chrono::duration<double> Duration;
-#define getDuration(a,b) std::chrono::duration_cast< std::chrono::duration<double> >(a - b)
-#define getDurationSeconds(duration) duration.count()
+TuioDeviceFactory::TuioDeviceFactory() {
+	// TODO Auto-generated constructor stub
 
 }
-#endif
 
-#endif /* TIME_H_ */
+TuioDeviceFactory::~TuioDeviceFactory() {
+	// TODO Auto-generated destructor stub
+}
+
+AbstractInputDeviceRef TuioDeviceFactory::createInputDevice(
+		const std::string& type, const std::string& name,
+		ConfigMapRef devicesMap) {
+
+	if (type == "InputDeviceTUIOClient")
+	{
+		return AbstractInputDeviceRef(new InputDeviceTUIOClient(name, devicesMap));
+	}
+
+	return NULL;
+}
+
+} /* namespace MinVR */
 
 
+extern "C"
+{
+
+extern "C"
+{
+	MinVR::DeviceFactoryRef getDeviceFactory() {
+		return MinVR::DeviceFactoryRef(new MinVR::TuioDeviceFactory());
+	}
+}
+}

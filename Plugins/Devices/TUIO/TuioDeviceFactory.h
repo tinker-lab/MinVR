@@ -3,7 +3,7 @@
 This file is part of the MinVR Open Source Project, which is developed and
 maintained by the University of Minnesota's Interactive Visualization Lab.
 
-File: MinVR/MVRCore/include/MVRCore/Time.h
+File: MinVR/Plugin/Devices/TUIO/TuioDeviceFactory.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -41,28 +41,22 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef TIME_H_
-#define TIME_H_
 
-#ifdef USE_BOOST
-#include "Boost/BoostTime.h"
-#else
-#include <chrono>
-#endif
+#ifndef TUIODEVICEFACTORY_H_
+#define TUIODEVICEFACTORY_H_
 
-#ifndef USE_BOOST
-namespace MinVR
-{
+#include "MVRCore/DeviceFactory.h"
 
-#define getCurrentTime() std::chrono::high_resolution_clock::now()
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> TimeStamp;
-typedef std::chrono::duration<double> Duration;
-#define getDuration(a,b) std::chrono::duration_cast< std::chrono::duration<double> >(a - b)
-#define getDurationSeconds(duration) duration.count()
+namespace MinVR {
 
-}
-#endif
+class TuioDeviceFactory : public DeviceFactory {
+public:
+	TuioDeviceFactory();
+	virtual ~TuioDeviceFactory();
 
-#endif /* TIME_H_ */
+	AbstractInputDeviceRef createInputDevice(const std::string& type, const std::string& name, ConfigMapRef devicesMap);
+};
 
+} /* namespace MinVR */
 
+#endif /* TUIODEVICEFACTORY_H_ */

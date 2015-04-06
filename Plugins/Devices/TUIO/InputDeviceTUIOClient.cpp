@@ -4,7 +4,7 @@ This file is part of the MinVR Open Source Project, which is developed and
 maintained collaboratively by the University of Minnesota's Interactive 
 Visualization Lab and the Brown University Visualization Research Lab.
 
-File: MinVR/MVRCore/source/InputDeviceTUIOClient.cpp
+File: MinVR/Plugin/Devices/TUIO/InputDeviceTUIOClient.cpp
 
 Original Author(s) of this File: 
 	Daniel Keefe, 2009, University of Minnesota (originally VRG3D/TUIOEvents.cpp)
@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 
-#include "MVRCore/InputDeviceTUIOClient.H"
+#include "InputDeviceTUIOClient.H"
 
 #include "MVRCore/StringUtils.H"
 #include "MVRCore/ConfigMap.H"
@@ -120,7 +120,7 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 	// Send "button" down events for cursors that are new and updated positions for all cursors
 	for (std::list<TuioCursor*>::iterator iter = cursorList.begin(); iter!=cursorList.end(); iter++) {
 		TuioCursor *tcur = (*iter);
-		glm::dvec2 pos = glm::vec2(_xScale*tcur->getX(), _yScale*tcur->getY());
+		glm::dvec2 pos = glm::dvec2(_xScale*tcur->getX(), _yScale*tcur->getY());
 
 		if (_cursorsDown.find(tcur->getCursorID()) != _cursorsDown.end()) {
 			events.push_back(EventRef(new Event("TUIO_Cursor" + intToString(tcur->getCursorID()) + "_down", pos, nullptr, tcur->getCursorID())));
@@ -128,7 +128,7 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 		}
 
 		if (tcur->getMotionSpeed() > 0.0) {
-			glm::dvec4 data = glm::vec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
+			glm::dvec4 data = glm::dvec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
 			events.push_back(EventRef(new Event("TUIO_CursorMove" + intToString(tcur->getCursorID()), data, nullptr, tcur->getCursorID())));
 		}
 

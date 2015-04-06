@@ -91,5 +91,7 @@ clobber:
 	rm -rf ./dependencies/boost
 	rm -rf ./dependencies/glfw
 	rm -rf ./dependencies/vrpn
+	rm -rf ./dependencies/tuio/src
+	rm -rf ./dependencies/tuio/tmp
 	rm -rf ./install
 	rm -rf ../$(CUR_DIR_NAME)_build	  

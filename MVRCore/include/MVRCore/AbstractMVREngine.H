@@ -55,7 +55,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/CameraOffAxis.H"
 #include "MVRCore/AbstractInputDevice.H"
-#include "MVRCore/InputDeviceTUIOClient.H"
 #include "MVRCore/InputDeviceSpaceNav.H"
 #include "MVRCore/InputDeviceVRPNAnalog.H"
 #include "MVRCore/InputDeviceVRPNButton.H"

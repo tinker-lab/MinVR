@@ -12,7 +12,6 @@ set(MINVR_VERSION "${MINVR_VERSION_MAJOR}.${MINVR_VERSION_MINOR}")
 set(MINVR_VERSION_FULL "${MINVR_VERSION}.${MINVR_VERSION_PATCH}${MINVR_VERSION_EXTRA}")
 
 option(USE_VRPN "Enable events from vrpn devices" ON)
-option(USE_TUIO "Enable generation of events from a tuio device" OFF)
 option(USE_SPACENAV "Enable generation of events from the 3dconnexion SpaceNavigator device" OFF)
 option(USE_BOOST "Forces the application to use Boost" OFF)
 
@@ -24,6 +23,7 @@ option(BUILD_USE_SOLUTION_FOLDERS "Enable grouping of projects in Visual Studio"
 option(BUILD_EXAMPLES "Enable to build app kit example projects" ON)
 option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built if an installed version is not found" ON)
 option(BUILD_DOCUMENTATION "If enable, cmake attempts to find Doxygen and build the API documentation" ON)
+option(BUILD_PLUGINS "If enable, cmake builds the available plugins" ON)
 
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ${BUILD_USE_SOLUTION_FOLDERS})
 
@@ -80,50 +80,6 @@ if (USE_VRPN)
 		add_definitions(-DUSE_VRPN)
 		set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
 		include_directories(${VRPN_INCLUDE_DIR})
-	endif()
-endif()
-
-if (USE_TUIO)
-	find_package(LibTUIO)
-	if (LIBTUIO_FOUND)
-		add_definitions(-DUSE_TUIO)
-		set(LIBS_OPT ${LIBS_OPT} ${LIBTUIO_OPT_LIBRARIES})
-		set(LIBS_DEBUG ${LIBS_DEBUG} ${LIBTUIO_DEBUG_LIBRARIES})
-		set(LIBS_ALL ${LIBS_ALL} ${LIBTUIO_ALL_LIBRARIES})
-		include_directories(${LIBTUIO_INCLUDE_DIRS})
-	elseif(BUILD_DEPENDENCIES)
-		set(tuio_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/tuio)
-		make_directory(${tuio_checkout_Dir})
-        message("   Library will be built from source in ${tuio_checkout_Dir}.")
-		include(ExternalProject)
-		set(tuio_PREFIX "${tuio_checkout_Dir}")
-		set(tuio_INSTALL_DIR "${MINVR_INSTALL_DIR}/tuio")
-		set(tuio_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${tuio_INSTALL_DIR}")
-		set(tuio_DIR "${tuio_INSTALL_DIR}")
-		set(tuio_PATCH "${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt")
-
-		if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-			set(tuio_CMAKE_ARGS ${tuio_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
-		endif()
-
-		ExternalProject_add(TUIO
-				PREFIX ${tuio_PREFIX}
-				URL http://prdownloads.sourceforge.net/reactivision/TUIO_CPP-1.4.zip
-				INSTALL_DIR ${tuio_INSTALL_DIR}
-				CMAKE_ARGS ${tuio_CMAKE_ARGS}
-				PATCH_COMMAND ${tuio_PATCH}
-				UPDATE_COMMAND ""
-		 )		 
-		set_property(TARGET TUIO PROPERTY FOLDER "Dependencies")
-		set(TUIO_INCLUDE_DIR ${tuio_INSTALL_DIR}/include CACHE INTERNAL "Directory of TUIO header files")
-		if(MSVC)
-			set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/TUIO.lib CACHE INTERNAL "TUIO lib file")
-		else()
-			set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/libTUIO.a CACHE INTERNAL "TUIO lib file")
-		endif()
-		add_definitions(-DUSE_TUIO)
-		set(LIBS_ALL ${LIBS_ALL} ${TUIO_LIBRARY})
-		include_directories(${TUIO_INCLUDE_DIR})
 	endif()
 endif()
 
@@ -230,6 +186,10 @@ if (BUILD_EXAMPLES)
 	endif()
 endif()
 
+if (BUILD_PLUGINS)
+	add_subdirectory(Plugins/Devices/TUIO)
+endif()
+
 #Configure MinVRConfig.cmake
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "")
@@ -237,4 +197,5 @@ include(${CMAKE_SOURCE_DIR}/cmake/minvr_minvrconfig.cmake)
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/lib/ DESTINATION "${MINVR_INSTALL_DIR}/lib")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/bin/ DESTINATION "${MINVR_INSTALL_DIR}/bin")
+install(DIRECTORY ${CMAKE_BINARY_DIR}/plugins/ DESTINATION "${MINVR_INSTALL_DIR}/plugins")
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/cmake/Modules/ DESTINATION "${MINVR_INSTALL_DIR}/cmake/modules")
