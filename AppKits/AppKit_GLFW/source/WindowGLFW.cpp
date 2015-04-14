@@ -105,7 +105,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	glfwWindowHint(GLFW_GREEN_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_BLUE_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_STENCIL_BITS, settings->stencilBits);
-	glfwWindowHint(GLFW_STEREO, settings->stereo);
+	glfwWindowHint(GLFW_STEREO, settings->stereo && settings->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED);
 	glfwWindowHint(GLFW_VISIBLE, settings->visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings->useDebugContext);
 

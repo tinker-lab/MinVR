@@ -74,12 +74,13 @@ public:
 		STEREOTYPE_CHECKERBOARD = 2,
 		STEREOTYPE_INTERLACEDCOLUMNS = 3,
 		STEREOTYPE_INTERLACEDROWS = 4,
-		STEREOTYPE_SIDEBYSIDE = 5
+		STEREOTYPE_SIDEBYSIDE = 5,
+		STEREOTYPE_OTHER = 6
 	};
 
 	WindowSettings() : width(960), height(600), xPos(0), yPos(0), windowTitle("MinVR"), resizable(true), rgbBits(8),
 		alphaBits(8), depthBits(24), stencilBits(8), stereo(false), stereoType(WindowSettings::STEREOTYPE_MONO), msaaSamples(0),
-		framed(true), fullScreen(false), visible(true), useGPUAffinity(true), useDebugContext(false) {};
+		framed(true), fullScreen(false), visible(true), useGPUAffinity(true), useDebugContext(false), stereoTypeName("Mono") {};
 	~WindowSettings() {};
 
 	int width;
@@ -101,6 +102,7 @@ public:
 	std::vector<MinVR::Rect2D> viewports;
 	bool useGPUAffinity;
 	bool useDebugContext;
+	std::string stereoTypeName;
 };
 
 } // end namespace

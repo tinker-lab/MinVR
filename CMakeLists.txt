@@ -188,6 +188,7 @@ endif()
 
 if (BUILD_PLUGINS)
 	add_subdirectory(Plugins/Devices/TUIO)
+	add_subdirectory(Plugins/Devices/OculusRift)
 endif()
 
 #Configure MinVRConfig.cmake

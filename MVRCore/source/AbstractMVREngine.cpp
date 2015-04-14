@@ -128,6 +128,7 @@ void AbstractMVREngine::setupWindowsAndViewports()
 		//wSettings.mouseVisible = _configMap->get(winStr + "MouseVisible", wSettings.mouseVisible);
 
 		std::string stereoStr = _configMap->get(winStr + "StereoType", "Mono");
+		wSettings->stereoTypeName = stereoStr;
 		if (stereoStr == "Mono") {
 			wSettings->stereoType = WindowSettings::STEREOTYPE_MONO;
 		}
@@ -146,11 +147,17 @@ void AbstractMVREngine::setupWindowsAndViewports()
 		else if (stereoStr == "SideBySide") {
 			wSettings->stereoType = WindowSettings::STEREOTYPE_SIDEBYSIDE;
 		}
-		else {
-			std::stringstream ss;
-			ss << "Fatal error: Unrecognized value for " + winStr + "StereoType: " + stereoStr;
-			Logger::getInstance().assertMessage(false, ss.str().c_str());
+		else if (stereoStr == "OculusRift") {
+			wSettings->stereoType = WindowSettings::STEREOTYPE_OTHER;
 		}
+		else {
+			wSettings->stereoType = WindowSettings::STEREOTYPE_OTHER;
+		}
+//		else {
+//			std::stringstream ss;
+//			ss << "Fatal error: Unrecognized value for " + winStr + "StereoType: " + stereoStr;
+//			Logger::getInstance().assertMessage(false, ss.str().c_str());
+//		}
 
 
 		// Within each window, you can have multiple viewports.  Each viewport will render

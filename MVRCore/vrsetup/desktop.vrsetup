@@ -10,7 +10,7 @@ InputDevicesFile      desktop-devices.cfg
 InterOcularDistance		0.2083
 InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))
 
-NumWindows				2
+NumWindows				1
 
 Window1_Width           600
 Window1_Height          600
@@ -22,13 +22,12 @@ Window1_DepthBits       8
 Window1_StencilBits     0
 Window1_MSAASamples     1
 Window1_FullScreen      0
-Window1_Stereo          0
+Window1_Stereo          1
 Window1_Resizable       1
 Window1_AllowMaximize   1
 Window1_Framed          1
 Window1_Caption         MinVR Window 1
-Window1_StereoType	    Mono
-Window1_UseDebugContext 1
+Window1_StereoType	    OculusRift
 Window1_UseGPUAffinity  0
 Window1_Visible         0
 
