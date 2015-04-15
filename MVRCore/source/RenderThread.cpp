@@ -57,7 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <log/Logger.h>
 #include <io/FileSystem.h>
 #include <dlfcn.h>
-#include "MVRCore/StereoDisplayFactory.h"
+#include "MVRCore/Display/StereoDisplayFactory.h"
 
 using namespace std;
 

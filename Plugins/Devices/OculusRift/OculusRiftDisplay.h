@@ -9,7 +9,7 @@
 #ifndef OCULUSRIFTDISPLAY_H_
 #define OCULUSRIFTDISPLAY_H_
 
-#include "MVRCore/StereoDisplayFactory.h"
+#include "MVRCore/Display/StereoDisplayFactory.h"
 
 #include <glm/glm.hpp>
 // The oculus SDK requires it's own macros to distinguish between

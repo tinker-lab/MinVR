@@ -10,7 +10,7 @@
 #define STEREODISPLAYFACTORY_H_
 
 #include <string>
-#include "StereoDisplay.h"
+#include "MVRCore/Display/StereoDisplay.h"
 
 namespace MinVR {
 

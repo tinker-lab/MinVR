@@ -54,7 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <vector>
 #include "MVRCore/StringUtils.H"
-#include "MVRCore/StereoDisplay.h"
+#include "MVRCore/Display/StereoDisplay.h"
 
 #if defined(WIN32)
 #define NOMINMAX
