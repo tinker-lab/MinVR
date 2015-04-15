@@ -6,17 +6,23 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef EMPTY_H_
-#define EMPTY_H_
+#ifndef STEREODISPLAYFACTORY_H_
+#define STEREODISPLAYFACTORY_H_
+
+#include <string>
+#include "StereoDisplay.h"
 
 namespace MinVR {
 
-class Empty {
+typedef std::shared_ptr<class StereoDisplayFactory> StereoDisplayFactoryRef;
+
+class StereoDisplayFactory {
 public:
-	Empty();
-	virtual ~Empty();
+	virtual ~StereoDisplayFactory() {}
+
+	virtual StereoDisplayRef create(const std::string& type) = 0;
 };
 
 } /* namespace MinVR */
 
-#endif /* EMPTY_H_ */
+#endif /* STEREODISPLAYFACTORY_H_ */

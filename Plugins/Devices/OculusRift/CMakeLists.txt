@@ -8,11 +8,11 @@ project (MinVR_oculus)
 #------------------------------------------
 
 set (SOURCEFILES
-Empty.h
+OculusRiftDisplay.h
 )
 
 set (HEADERFILES
-Empty.cpp
+OculusRiftDisplay.cpp
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

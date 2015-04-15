@@ -73,11 +73,7 @@ AbstractInputDeviceRef TuioDeviceFactory::createInputDevice(
 
 extern "C"
 {
-
-extern "C"
-{
 	MinVR::DeviceFactoryRef getDeviceFactory() {
 		return MinVR::DeviceFactoryRef(new MinVR::TuioDeviceFactory());
 	}
-}
 }

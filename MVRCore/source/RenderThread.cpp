@@ -56,6 +56,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractMVREngine.H"
 #include <log/Logger.h>
 #include <io/FileSystem.h>
+#include <dlfcn.h>
+#include "MVRCore/StereoDisplayFactory.h"
 
 using namespace std;
 
@@ -85,6 +87,36 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	RenderThread::nextThreadId++;
 
 	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
+
+	if (_window->getSettings()->stereo && _window->getSettings()->stereoType == WindowSettings::STEREOTYPE_OTHER)
+	{
+		// load the triangle library
+
+		void* pluginLib = dlopen(FileSystem::getInstance().concatPath(INSTALLPATH, "plugins/libMinVR_oculus.so").c_str(), RTLD_NOW);//RTLD_LAZY);
+		if (!pluginLib) {
+			std::cerr << "Cannot load library: " << dlerror() << '\n';
+			exit(1);
+		}
+
+		// reset errors
+		dlerror();
+
+		// load the symbols
+		typedef MinVR::StereoDisplayFactoryRef create_t();
+		create_t* create_factory = (create_t*) dlsym(pluginLib, "getStereoDisplayFactory");
+		const char* dlsym_error = dlerror();
+		if (dlsym_error) {
+			std::cerr << "Cannot load symbol create: " << dlsym_error << '\n';
+			exit(1);
+		}
+
+		// reset errors
+		dlerror();
+
+		MinVR::StereoDisplayFactoryRef factory = create_factory();
+
+		_stereoDisplay = factory->create(_window->getSettings()->stereoTypeName);
+	}
 }
 
 RenderThread::~RenderThread()
@@ -110,6 +142,10 @@ void RenderThread::render()
 
 	_engine->initializeContextSpecificVars(_threadId, _window);
 	_app->initializeContextSpecificVars(_threadId, _window);
+	if (_stereoDisplay != NULL)
+	{
+		_stereoDisplay->initializeContextSpecificVars(_threadId, _window);
+	}
 
 	if((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "openGL ERROR in start of render(): "<<err<<std::endl;
@@ -146,7 +182,11 @@ void RenderThread::render()
 
 		// Draw the scene
 		// Monoscopic
-		if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_MONO || _window->getSettings()->stereo == false) {
+		if (_stereoDisplay != NULL)
+		{
+			_stereoDisplay->render(_threadId, _window, _app);
+		}
+		else if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_MONO || _window->getSettings()->stereo == false) {
 			glDrawBuffer(GL_BACK);
 			glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {

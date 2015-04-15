@@ -54,6 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include <vector>
 #include "MVRCore/StringUtils.H"
+#include "MVRCore/StereoDisplay.h"
 
 #if defined(WIN32)
 #define NOMINMAX
@@ -127,6 +128,7 @@ private:
 	GLuint _fullscreenIndices[4];
 	GLuint _vertexBuffer;
 	GLuint _indexBuffer;
+	StereoDisplayRef _stereoDisplay;
 
 	// Unfortunately windows does not default to supporting opengl > 1.1
 	// This is a hack to load the framebuffer and shader extensions needed to support
