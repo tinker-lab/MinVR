@@ -13,6 +13,7 @@ OculusRiftDisplay.h
 
 set (HEADERFILES
 OculusRiftDisplay.cpp
+GL/glext.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

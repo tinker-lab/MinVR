@@ -57,8 +57,8 @@ include/log/BasicLogger.h
 include/log/ThreadSafeLogger.h
 include/log/CompositeLogger.h
 include/MVRCore/DeviceFactory.h
-include/MVRCore/StereoDisplay.h
-include/MVRCore/StereoDisplayFactory.h
+include/MVRCore/Display/StereoDisplay.h
+include/MVRCore/Display/StereoDisplayFactory.h
 )
 
 if (USE_BOOST)
