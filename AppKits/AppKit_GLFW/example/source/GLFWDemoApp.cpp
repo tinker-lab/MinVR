@@ -74,7 +74,8 @@ void GLFWDemoApp::initializeContextSpecificVars(int threadId, WindowRef window)
 	initVBO(threadId);
 	initLights();
 
-	glClearColor(0.f, 0.3f, 1.f, 1.f);
+	//glClearColor(0.f, 0.3f, 1.f, 1.f);
+	glClearColor(1.f, 0.f, 0.f, 1.f);
 
 	GLenum err;
 	if((err = glGetError()) != GL_NO_ERROR) {

@@ -86,8 +86,6 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	_threadId = RenderThread::nextThreadId;
 	RenderThread::nextThreadId++;
 
-	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
-
 	if (_window->getSettings()->stereo && _window->getSettings()->stereoType == WindowSettings::STEREOTYPE_OTHER)
 	{
 		// load the triangle library
@@ -115,8 +113,13 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 
 		MinVR::StereoDisplayFactoryRef factory = create_factory();
 
+		std::cout << "call create"<<std::endl;
 		_stereoDisplay = factory->create(_window->getSettings()->stereoTypeName);
 	}
+
+	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
+
+
 }
 
 RenderThread::~RenderThread()
@@ -141,11 +144,13 @@ void RenderThread::render()
 	}
 
 	_engine->initializeContextSpecificVars(_threadId, _window);
-	_app->initializeContextSpecificVars(_threadId, _window);
+	std::cout << "call initializeContextSpecificVars_out"<<std::endl;
 	if (_stereoDisplay != NULL)
 	{
+		std::cout << "call initializeContextSpecificVars"<<std::endl;
 		_stereoDisplay->initializeContextSpecificVars(_threadId, _window);
 	}
+	_app->initializeContextSpecificVars(_threadId, _window);
 
 	if((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "openGL ERROR in start of render(): "<<err<<std::endl;

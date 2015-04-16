@@ -8,7 +8,6 @@
 
 #include "OculusRiftDisplay.h"
 
-
 namespace MinVR {
 
 
@@ -95,10 +94,12 @@ namespace ovr {
 }
 
 OculusRiftDisplay::OculusRiftDisplay() {
+
 	if (!ovr_Initialize()) {
 	    FAIL("Failed to initialize the Oculus SDK");
 	}
 
+	std::cout << "OculusRiftDisplay" << std::endl;
 	_hmd = ovrHmd_Create(0);
 	if (nullptr == _hmd) {
 		ovrHmdType defaultHmdType = ovrHmd_DK2;
@@ -109,21 +110,6 @@ OculusRiftDisplay::OculusRiftDisplay() {
 		_hmdDesktopPosition = ivec2(_hmd->WindowsPos.x, _hmd->WindowsPos.y);
 		_hmdNativeResolution = ivec2(_hmd->Resolution.w, _hmd->Resolution.h);
 	}
-
-    /*if (!ovrHmd_ConfigureTracking(_hmd,
-      ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0)) {
-      FAIL("Could not attach to sensor device");
-    }*/
-
-    memset(_eyeTextures, 0, 2 * sizeof(ovrGLTexture));
-
-    ovr::for_each_eye([&](ovrEyeType eye){
-      ovrSizei eyeTextureSize = ovrHmd_GetFovTextureSize(_hmd, eye, _hmd->MaxEyeFov[eye], 1.0f);
-      ovrTextureHeader & eyeTextureHeader = _eyeTextures[eye].Header;
-      eyeTextureHeader.TextureSize = eyeTextureSize;
-      eyeTextureHeader.RenderViewport.Size = eyeTextureSize;
-      eyeTextureHeader.API = ovrRenderAPI_OpenGL;
-    });
 }
 
 OculusRiftDisplay::~OculusRiftDisplay() {
@@ -134,7 +120,7 @@ OculusRiftDisplay::~OculusRiftDisplay() {
 }
 
 void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef app) {
-	glDrawBuffer(GL_BACK);
+	/*glDrawBuffer(GL_BACK);
 	glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Left Eye
 	for (int v=0; v < window->getNumViewports(); v++) {
@@ -149,7 +135,30 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
 		glViewport(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
 		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
 		app->drawGraphics(threadId, window->getCamera(v), window);
-	}
+	}*/
+	++_frame;
+
+    ovrHmd_GetEyePoses(_hmd, _frame, _eyeOffsets, _eyePoses, nullptr);
+
+    ovrHmd_BeginFrame(_hmd, _frame);
+    for (int i = 0; i < 2; ++i) {
+      ovrEyeType eye = _currentEye = _hmd->EyeRenderOrder[i];
+      const ovrRecti & vp = _eyeTextures[eye].Header.RenderViewport;
+
+      // Render the scene to an offscreen buffer
+      _eyeFbos[eye].activate();
+      for (int v=0; v < window->getNumViewports(); v++)
+      {
+      		MinVR::Rect2D viewport = window->getViewport(v);
+      		glViewport(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
+      		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
+      		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      		app->drawGraphics(threadId, window->getCamera(v), window);
+      }
+      //renderScene(projections[eye], ovr::toGlm(eyePoses[eye]));
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ovrHmd_EndFrame(_hmd, _eyePoses, _eyeTextures);
 }
 
 MinVR::OculusRiftDisplayFactory::OculusRiftDisplayFactory() {
@@ -170,58 +179,84 @@ StereoDisplayRef MinVR::OculusRiftDisplayFactory::create(
 
 void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
 		WindowRef window) {
+
+	std::cout << "initializeContextSpecificVars" << std::endl;
+
+    /*if (!ovrHmd_ConfigureTracking(_hmd,
+      ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0)) {
+      FAIL("Could not attach to sensor device");
+    }
+
+    memset(_eyeTextures, 0, 2 * sizeof(ovrGLTexture));
+
+    ovr::for_each_eye([&](ovrEyeType eye){
+      ovrSizei eyeTextureSize = ovrHmd_GetFovTextureSize(_hmd, eye, _hmd->MaxEyeFov[eye], 1.0f);
+      ovrTextureHeader & eyeTextureHeader = _eyeTextures[eye].Header;
+      eyeTextureHeader.TextureSize = eyeTextureSize;
+      eyeTextureHeader.RenderViewport.Size = eyeTextureSize;
+      eyeTextureHeader.API = ovrRenderAPI_OpenGL;
+    });*/
+
+    // Init GL
     ovrGLConfig cfg;
     memset(&cfg, 0, sizeof(cfg));
     cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
-    ovrSizei size;
-    size.w = _hmd->Resolution.w;
-    size.h = _hmd->Resolution.h;
-    cfg.OGL.Header.RTSize = size;
+    cfg.OGL.Header.RTSize = ovr::fromGlm(uvec2(500,500));
     cfg.OGL.Header.Multisample = 0;
 
     int distortionCaps = 0
-      | ovrDistortionCap_Vignette
-      | ovrDistortionCap_Chromatic
-      | ovrDistortionCap_Overdrive
-      | ovrDistortionCap_TimeWarp
-      ;
+    		| ovrDistortionCap_Vignette
+    		| ovrDistortionCap_Chromatic
+    		| ovrDistortionCap_Overdrive
+    		| ovrDistortionCap_TimeWarp
+    		;
 
-    /*ON_LINUX([&]{
-      // This cap bit causes the SDK to properly handle the
-      // Rift in portrait mode.
-      distortionCaps |= ovrDistortionCap_LinuxDevFullscreen;
+    ON_LINUX([&]{
+    	// This cap bit causes the SDK to properly handle the
+    	// Rift in portrait mode.
+    	distortionCaps |= ovrDistortionCap_LinuxDevFullscreen;
 
-      // On windows, the SDK does a good job of automatically
-      // finding the correct window.  On Linux, not so much.
-      cfg.OGL.Disp = glfwGetX11Display();
-      cfg.OGL.Win = glfwGetX11Window(window);
-    });*/
+    	// On windows, the SDK does a good job of automatically
+    	// finding the correct window.  On Linux, not so much.
 
-    int configResult = ovrHmd_ConfigureRendering(_hmd, &cfg.Config,
-      distortionCaps, _hmd->MaxEyeFov, _eyeRenderDescs);
+    	NativeWindow nWindow = window->getNativeWindow();
+    	cfg.OGL.Disp = nWindow.nativeDisplay;
+    	cfg.OGL.Win = nWindow.nativeWindow;
+    });
 
-    /*ovrGLTexture eyeTexture[2];
-    for (int i = 0; i < ovrEye_Count; i++)
-    {
-    	eyeTexture[0].OGL.Header.API = ovrRenderAPI_OpenGL;
-    	eyeTexture[0].OGL.Header.TextureSize = RenderTargetSize;
-    	eyeTexture[0].OGL.Header.RenderViewport = eyes[0].RenderViewport;
-        eyeTexture[0].OGL.TexId = textureId;
+    if (!ovrHmd_ConfigureTracking(_hmd,
+      ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0)) {
+      FAIL("Could not attach to sensor device");
     }
 
-    ovr::for_each_eye([&](ovrEyeType eye){
-      const ovrEyeRenderDesc & erd = eyeRenderDescs[eye];
-      ovrMatrix4f ovrPerspectiveProjection = ovrMatrix4f_Projection(erd.Fov, OVR_DEFAULT_IPD * 4, 100000.0f, true);
-      projections[eye] = ovr::toGlm(ovrPerspectiveProjection);
-      eyeOffsets[eye] = erd.HmdToEyeViewOffset;
+    memset(_eyeTextures, 0, 2 * sizeof(ovrGLTexture));
 
-      // Allocate the frameBuffer that will hold the scene, and then be
-      // re-rendered to the screen with distortion
-      auto & eyeTextureHeader = eyeTextures[eye];
-      eyeFbos[eye].init(ovr::toGlm(eyeTextureHeader.Header.TextureSize));
-      // Get the actual OpenGL texture ID
-      ((ovrGLTexture&)eyeTextureHeader).OGL.TexId = eyeFbos[eye].color;
-    });*/
+    ovr::for_each_eye([&](ovrEyeType eye){
+      ovrSizei eyeTextureSize = ovrHmd_GetFovTextureSize(_hmd, eye, _hmd->MaxEyeFov[eye], 1.0f);
+      ovrTextureHeader & eyeTextureHeader = _eyeTextures[eye].Header;
+      eyeTextureHeader.TextureSize = eyeTextureSize;
+      eyeTextureHeader.RenderViewport.Size = eyeTextureSize;
+      eyeTextureHeader.API = ovrRenderAPI_OpenGL;
+    });
+
+    int configResult = ovrHmd_ConfigureRendering(_hmd, &cfg.Config,
+    		distortionCaps, _hmd->MaxEyeFov, _eyeRenderDescs);
+
+    ovr::for_each_eye([&](ovrEyeType eye){
+    	const ovrEyeRenderDesc & erd = _eyeRenderDescs[eye];
+    	ovrMatrix4f ovrPerspectiveProjection = ovrMatrix4f_Projection(erd.Fov, OVR_DEFAULT_IPD * 4, 100000.0f, true);
+    	_projections[eye] = ovr::toGlm(ovrPerspectiveProjection);
+    	_eyeOffsets[eye] = erd.HmdToEyeViewOffset;
+
+    	// Allocate the frameBuffer that will hold the scene, and then be
+    	// re-rendered to the screen with distortion
+    	auto & eyeTextureHeader = _eyeTextures[eye];
+    	_eyeFbos[eye].init(ovr::toGlm(eyeTextureHeader.Header.TextureSize));
+    	// Get the actual OpenGL texture ID
+    	((ovrGLTexture&)eyeTextureHeader).OGL.TexId = _eyeFbos[eye].color;
+    });
+
+    ovrHmd_RecenterPose(_hmd);
 }
 
 } /* namespace MinVR */

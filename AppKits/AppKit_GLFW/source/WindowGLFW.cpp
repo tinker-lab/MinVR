@@ -47,6 +47,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include "log/Logger.h"
 
+#if (defined(WIN64) || defined(WIN32))
+#define OS_WIN
+#elif (defined(__APPLE__))
+#define OS_OSX
+#else
+#define OS_LINUX
+#endif
+
+#if defined(OS_WIN)
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+#elif defined(OS_OSX)
+#define GLFW_EXPOSE_NATIVE_COCOA
+#define GLFW_EXPOSE_NATIVE_NSGL
+#elif defined(OS_LINUX)
+#define GLFW_EXPOSE_NATIVE_X11
+#define GLFW_EXPOSE_NATIVE_GLX
+#endif
+
+#include <GLFW/glfw3native.h>
+
 namespace MinVR {
 
 #define MAX_AFFINITY_GPUS 16
@@ -108,6 +129,9 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	glfwWindowHint(GLFW_STEREO, settings->stereo && settings->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED);
 	glfwWindowHint(GLFW_VISIBLE, settings->visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings->useDebugContext);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
 	if (settings->fullScreen) {
 		// Find the monitor that most closely matches the position
@@ -751,4 +775,14 @@ void WindowGLFW::initDebugCallback()
 	}
 }
 
+NativeWindow WindowGLFW::getNativeWindow() {
+	NativeWindow nWindow;
+#ifdef OS_LINUX
+	nWindow.nativeDisplay = glfwGetX11Display();
+	nWindow.nativeWindow = glfwGetX11Window(getWindowPtr());
+#endif
+	return nWindow;
+}
+
 } // end namespace
+

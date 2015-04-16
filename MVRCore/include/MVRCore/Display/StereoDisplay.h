@@ -20,7 +20,8 @@ public:
 	virtual ~StereoDisplay() {}
 
 	virtual void render(int threadId, WindowRef window, AbstractMVRAppRef app) = 0;
-	virtual void initializeContextSpecificVars(int threadId, WindowRef window) {}
+	virtual void initializeContextSpecificVars(int threadId, WindowRef window) {
+		std::cout << "call initializeContextSpecificVars_Base"<<std::endl;}
 };
 
 } /* namespace MinVR */

@@ -84,6 +84,7 @@ public:
 	int getXPos();
 	int getYPos();
 	GLFWwindow* getWindowPtr();
+	NativeWindow getNativeWindow();
 
 	/** This method is called from the window_size_callback to update the _width and _height member
 		variables. It can also be used to change the window size if actuallySet is true.

@@ -55,7 +55,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <memory>
 
+#if defined(WIN32)
+#define NOMINMAX
+#include <windows.h>
+#include <GL/gl.h>
+#elif defined(__APPLE__)
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/glu.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+#include "GL/glext.h"
+
+#if (defined(WIN64) || defined(WIN32))
+#define OS_WIN
+#elif (defined(__APPLE__))
+#define OS_OSX
+#else
+#define OS_LINUX
+#endif
+
+#ifdef OS_LINUX
+#include <X11/Xlib.h>
+#endif
+
 namespace MinVR {
+
+struct NativeWindow
+{
+#ifdef OS_LINUX
+	Display* nativeDisplay;
+	Window nativeWindow;
+#endif
+};
 
 typedef std::shared_ptr<class AbstractWindow> WindowRef;
 
@@ -107,6 +141,12 @@ public:
 	 *  @param[in] The new head position.
 	 */
 	virtual void updateHeadTrackingForAllViewports(glm::dmat4 headFrame);
+
+	/*! @brief Returns the native window information.
+	 *
+	 *  This returns the native operating system window information.
+	 */
+	virtual NativeWindow getNativeWindow() = 0;
 
 	WindowSettings::StereoType getStereoType() { return _settings->stereoType; }
 	size_t getNumViewports() { return _viewports.size(); }

@@ -15,6 +15,19 @@
 #include <memory>
 #include <exception>
 
+//////////////////////////////////////////////////////////////////////
+//
+// The OVR types header contains the OS detection macros:
+//  OVR_OS_WIN32, OVR_OS_MAC, OVR_OS_LINUX (and others)
+//
+
+#if (defined(WIN64) || defined(WIN32))
+#define OS_WIN
+#elif (defined(__APPLE__))
+#define OS_OSX
+#else
+#define OS_LINUX
+#endif
 
 #if defined(OS_WIN)
 #define ON_WINDOWS(runnable) runnable()
@@ -75,20 +88,6 @@ using glm::vec4;
 using glm::quat;
 
 
-//////////////////////////////////////////////////////////////////////
-//
-// The OVR types header contains the OS detection macros:
-//  OVR_OS_WIN32, OVR_OS_MAC, OVR_OS_LINUX (and others)
-//
-
-#if (defined(WIN64) || defined(WIN32))
-#define OS_WIN
-#elif (defined(__APPLE__))
-#define OS_OSX
-#else
-#define OS_LINUX
-#endif
-
 #if defined(WIN32)
 #define NOMINMAX
 #include <windows.h>
@@ -102,17 +101,6 @@ using glm::quat;
 #include <GL/glu.h>
 #endif
 #include "GL/glext.h"
-
-// The oculus SDK requires it's own macros to distinguish between
-// operating systems, which is required to setup the platform specific
-// values, like window handles
-#if defined(OS_WIN)
-#define OVR_OS_WIN32
-#elif defined(OS_OSX)
-#define OVR_OS_MAC
-#elif defined(OS_LINUX)
-#define OVR_OS_LIUNX
-#endif
 
 #include <OVR_CAPI_GL.h>
 
@@ -196,7 +184,7 @@ struct FramebufferWraper {
     return false;
   }
 
-  void init(const glm::ivec2 & size) {
+  void init(const glm::uvec2 & size) {
     this->size = size;
     allocate();
 
@@ -247,6 +235,7 @@ private:
 	glm::mat4 _projections[2];
 	ovrPosef _eyePoses[2];
 	FramebufferWraper _eyeFbos[2];
+	unsigned int _frame{ 0 };
 };
 
 class OculusRiftDisplayFactory : public StereoDisplayFactory {
