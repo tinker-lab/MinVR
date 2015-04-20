@@ -27,6 +27,8 @@ source/io/BasicFileSystem.cpp
 source/log/BasicLogger.cpp
 source/log/ThreadSafeLogger.cpp
 source/log/CompositeLogger.cpp
+source/framework/plugin/PluginManager.cpp
+source/framework/plugin/SharedLibrary.cpp
 )
 
 set (HEADERFILES
@@ -58,6 +60,12 @@ include/io/BasicFileSystem.h
 include/log/BasicLogger.h
 include/log/ThreadSafeLogger.h
 include/log/CompositeLogger.h
+include/framework/plugin/PluginFramework.h
+include/framework/plugin/Plugin.h
+include/framework/plugin/PluginInterface.h
+include/framework/plugin/PluginManager.h
+include/framework/plugin/SharedLibrary.h
+include/framework/InputDevice.h
 )
 
 if (USE_BOOST)

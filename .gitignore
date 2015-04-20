@@ -17,6 +17,9 @@ dependencies/G3D9
 dependencies/glfw
 dependencies/boost
 dependencies/vrpn
+dependencies/osdk/
+dependencies/tuio/src/
+dependencies/tuio/tmp/
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
