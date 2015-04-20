@@ -9,6 +9,9 @@
 #ifndef PLUGINMANAGER_H_
 #define PLUGINMANAGER_H_
 
+#include <string>
+#include <vector>
+#include "framework/plugin/SharedLibrary.h"
 #include "framework/plugin/PluginInterface.h"
 
 namespace MinVR {
@@ -20,8 +23,11 @@ public:
 	PluginManager(PluginInterface *interface);
 	virtual ~PluginManager();
 
+	void loadPlugin(const std::string& filePath);
+
 private:
 	PluginInterface *_interface;
+	std::vector<SharedLibraryRef> _plugins;
 };
 
 } /* namespace plugin */

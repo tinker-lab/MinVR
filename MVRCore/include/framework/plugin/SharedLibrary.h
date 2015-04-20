@@ -10,6 +10,7 @@
 #define SHAREDLIBRARY_H_
 
 #include <string>
+#include <memory>
 
 #include <dlfcn.h>
 typedef void * HandleType;
@@ -17,6 +18,8 @@ typedef void * HandleType;
 namespace MinVR {
 namespace framework {
 namespace plugin {
+
+typedef std::shared_ptr<class SharedLibrary> SharedLibraryRef;
 
 class SharedLibrary {
 public:
@@ -26,10 +29,14 @@ public:
 	void load();
 	void unload();
 
-	template<typename TSignature>
-	TSignature * loadSymbol(const std::string &functionName)
+	bool isLoaded() {
+		return _isLoaded;
+	}
+
+	template<typename TSig>
+	TSig * loadSymbol(const std::string &functionName)
 	{
-		return reinterpret_cast<TSignature *>(loadSymbolInternal(functionName));
+		return reinterpret_cast<TSig *>(loadSymbolInternal(functionName));
 	}
 
 protected:
