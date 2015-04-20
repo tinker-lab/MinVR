@@ -136,6 +136,9 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
 		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
 		app->drawGraphics(threadId, window->getCamera(v), window);
 	}*/
+
+	GLenum err;
+
 	++_frame;
 
     ovrHmd_GetEyePoses(_hmd, _frame, _eyeOffsets, _eyePoses, nullptr);
@@ -145,20 +148,47 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
       ovrEyeType eye = _currentEye = _hmd->EyeRenderOrder[i];
       const ovrRecti & vp = _eyeTextures[eye].Header.RenderViewport;
 
+  	while((err = glGetError()) != GL_NO_ERROR) {
+  		std::cout << "GLERRORh: "<<err<<std::endl;
+  	}
+
       // Render the scene to an offscreen buffer
       _eyeFbos[eye].activate();
       for (int v=0; v < window->getNumViewports(); v++)
       {
       		MinVR::Rect2D viewport = window->getViewport(v);
       		glViewport(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
-      		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
+      		if (eye == ovrEye_Left)
+      		{
+          		window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
+      		}
+      		else
+      		{
+          		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
+      		}
       		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      		while((err = glGetError()) != GL_NO_ERROR) {
+      			std::cout << "GLERRORssss: "<<err<<std::endl;
+      		}
+
       		app->drawGraphics(threadId, window->getCamera(v), window);
       }
       //renderScene(projections[eye], ovr::toGlm(eyePoses[eye]));
     }
+
+
+	while((err = glGetError()) != GL_NO_ERROR) {
+		std::cout << "GLERRORg: "<<err<<std::endl;
+	}
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     ovrHmd_EndFrame(_hmd, _eyePoses, _eyeTextures);
+
+
+	while((err = glGetError()) != GL_NO_ERROR) {
+		std::cout << "GLERRORf: "<<err<<std::endl;
+	}
 }
 
 MinVR::OculusRiftDisplayFactory::OculusRiftDisplayFactory() {

@@ -75,6 +75,14 @@ private:
 	void initLights();
 
 	std::map<int, GLuint> _vboId;
+
+
+	GLuint _shaderProgram;
+	std::string _vertexShader;
+	std::string _geometryShader;
+	std::string _fragmentShader;
+	glm::vec3 _headPos;
+	float _xRotationAngle;
 };
 
 #endif
