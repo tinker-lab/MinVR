@@ -21,7 +21,7 @@ typedef std::shared_ptr<class Plugin> PluginRef;
 
 class Plugin {
 public:
-	virtual ~Plugin();
+	virtual ~Plugin() {}
 
 	virtual bool registerPlugin(PluginInterface *interface) = 0;
 };
