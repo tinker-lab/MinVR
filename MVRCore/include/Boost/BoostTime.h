@@ -54,7 +54,7 @@ namespace MinVR
 typedef boost::posix_time::ptime TimeStamp;
 typedef boost::posix_time::time_duration Duration;
 #define getDuration(a,b) a - b
-#define getSeconds(duration) duration.total_seconds()
+#define getDurationSeconds(duration) duration.total_seconds()
 
 }
 

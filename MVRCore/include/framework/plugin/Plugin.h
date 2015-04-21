@@ -10,6 +10,7 @@
 #define PLUGIN_H_
 
 #include "framework/plugin/PluginFramework.h"
+#include "framework/plugin/PluginInterface.h"
 #include <memory>
 
 namespace MinVR {
@@ -20,7 +21,7 @@ typedef std::shared_ptr<class Plugin> PluginRef;
 
 class Plugin {
 public:
-	virtual ~Plugin();
+	virtual ~Plugin() {}
 
 	virtual bool registerPlugin(PluginInterface *interface) = 0;
 };
@@ -28,6 +29,7 @@ public:
 } /* namespace plugin */
 } /* namespace framework */
 } /* namespace MinVR */
+
 
 extern "C"
 {
@@ -37,6 +39,7 @@ extern "C"
 }
 
 /*
+
 extern "C"
 {
 	MinVR::framework::plugin::PluginRef loadPlugin() {
