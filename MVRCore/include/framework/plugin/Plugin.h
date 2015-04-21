@@ -10,6 +10,7 @@
 #define PLUGIN_H_
 
 #include "framework/plugin/PluginFramework.h"
+#include "framework/plugin/PluginInterface.h"
 #include <memory>
 
 namespace MinVR {
@@ -29,6 +30,7 @@ public:
 } /* namespace framework */
 } /* namespace MinVR */
 
+
 extern "C"
 {
 	int getMinVRPluginFrameworkVersion() {
@@ -37,6 +39,7 @@ extern "C"
 }
 
 /*
+
 extern "C"
 {
 	MinVR::framework::plugin::PluginRef loadPlugin() {

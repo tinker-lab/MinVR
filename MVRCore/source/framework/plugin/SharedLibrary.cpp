@@ -28,7 +28,7 @@ SharedLibrary::~SharedLibrary() {
 void SharedLibrary::load() {
 	if (!_isLoaded)
 	{
-		HandleType _lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
+		_lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
 		if (!_lib) {
 			MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath);
 			dlerror();
@@ -54,16 +54,21 @@ void SharedLibrary::unload() {
 }
 
 void* SharedLibrary::loadSymbolInternal(const std::string &functionName) {
-	void* symbol = (void*) dlsym(_lib, "functionName");
-	const char* dlsym_error = dlerror();
-	if (dlsym_error) {
-		MinVR::Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName);
-		dlerror();
+	if (_isLoaded)
+	{
+		void* symbol = (void*) dlsym(_lib, functionName.c_str());
+		const char* dlsym_error = dlerror();
+		if (dlsym_error) {
+			MinVR::Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName);
+			dlerror();
 
-		return NULL;
+			return NULL;
+		}
+
+		return symbol;
 	}
 
-	return symbol;
+	return NULL;
 }
 
 } /* namespace plugin */

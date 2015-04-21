@@ -36,6 +36,10 @@ void PluginManager::loadPlugin(const std::string& filePath) {
 
 		typedef MinVR::framework::plugin::PluginRef load_t();
 		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
+		if (loadPlugin == NULL)
+		{
+			return;
+		}
 		PluginRef plugin = loadPlugin();
 		if (!plugin->registerPlugin(_interface))
 		{
