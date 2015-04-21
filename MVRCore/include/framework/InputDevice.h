@@ -10,13 +10,14 @@
 #define INPUTDEVICE_H_
 
 #include <memory>
+#include "MVRCore/ConfigMap.H"
 #include "MVRCore/Event.H"
 
 namespace MinVR {
 namespace framework {
 
 typedef std::shared_ptr<class InputDevice> InputDeviceRef;
-typedef std::shared_ptr<class InputDeviceFactory> InputDeviceDriverRef;
+typedef std::shared_ptr<class InputDeviceDriver> InputDeviceDriverRef;
 
 /*! @brief Base class for InputDevices.
  *  Input Devices should be polled once
@@ -42,7 +43,7 @@ class InputDeviceDriver {
 public:
 	virtual ~InputDeviceDriver() {}
 
-	virtual InputDeviceRef create() = 0;
+	virtual InputDeviceRef create(std::string type, ConfigMapRef config) = 0;
 };
 
 } /* namespace framework */

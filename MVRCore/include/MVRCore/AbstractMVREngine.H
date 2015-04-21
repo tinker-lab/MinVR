@@ -57,6 +57,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "framework/InputDevice.h"
 #include "MVRCore/RenderThread.H"
 #include "MVRCore/DataFileUtils.H"
+#include "framework/plugin/PluginManager.h"
+#include "framework/plugin/PluginInterface.h"
 #include "MVRCore/Event.H"
 #include <glm/glm.hpp>
 #ifdef nil
@@ -76,7 +78,7 @@ namespace MinVR {
  *
  *  The MVREngine handles creating the windows, threads, devices, and mainloop.
  */
-class AbstractMVREngine {
+class AbstractMVREngine : public MinVR::framework::plugin::PluginInterface {
 public:
 
 	AbstractMVREngine();
@@ -132,6 +134,12 @@ public:
 	 */
 	virtual void initializeLogging();
 
+	/*! @brief Add Input Device Drivers
+		 *
+		 *  Allows the ability to add input devices.
+	*/
+	void addInputDeviceDriver(MinVR::framework::InputDeviceDriverRef driver);
+
 protected:
 
 	/*! @brief Creates windows and viewports
@@ -140,7 +148,16 @@ protected:
 	 *  
 	 *  @sa init
 	 */
+	virtual void setupPlugins();
+
+	/*! @brief Creates windows and viewports
+	 *
+	 *  Called from init to create windows and viewports based on the vrsetup file
+	 *
+	 *  @sa init
+	 */
 	virtual void setupWindowsAndViewports();
+
 
 	/*! @brief Creates a window
 	 *
@@ -186,6 +203,7 @@ protected:
 	std::vector<EventRef> _events;
 	std::vector<WindowRef>  _windows;
 	std::vector<MinVR::framework::InputDeviceRef> _inputDevices;
+	std::vector<MinVR::framework::InputDeviceDriverRef> _inputDeviceDrivers;
 	std::vector<RenderThreadRef> _renderThreads;
 	Mutex _threadsInitializedMutex;
 	ConditionVariable _threadsInitializedCond;
@@ -196,6 +214,7 @@ protected:
 	std::shared_ptr<Barrier> _swapBarrier;
 	TimeStamp _syncTimeStart;
 	unsigned long _frameCount;
+	MinVR::framework::plugin::PluginManager _pluginManager;
 };
 
 } // end namespace

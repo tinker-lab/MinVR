@@ -19,10 +19,10 @@ class PluginInterface {
 public:
 	virtual ~PluginInterface() {}
 
-	virtual void addGraphicsDriver() = 0;
+	virtual void addGraphicsDriver() {};
 	virtual void addInputDeviceDriver(InputDeviceDriverRef driver) = 0;
-	virtual void addStereoDriver() = 0;
-	virtual void addDisplayDriver() = 0;
+	virtual void addStereoDriver() {};
+	virtual void addDisplayDriver() {};
 };
 
 } /* namespace plugin */

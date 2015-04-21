@@ -7,6 +7,9 @@ Description           A standard non-VR desktop window
 # for no devices other than keyboard and mouse)
 InputDevicesFile      
 
+#Plugins+= /path/to/plugin
+#Plugins+= /path/to/plugin2
+
 InterOcularDistance		0.2083
 InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))
 
