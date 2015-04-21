@@ -46,17 +46,6 @@ if (BUILD_DEPENDENCIES)
 
    if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		set(GIT_EXECUTABLE "C:/Program Files (x86)/Git/bin/git.exe")
-       find_path(GIT_EXECUTABLE NAMES git
-          PATHS "Git/bin/"
-		  NO_DEFAULT_PATH
-		  NO_CMAKE_PATH
-		  NO_CMAKE_ENVIRONMENT_PATH
-		  )
-	   #find_program(GIT_EXECUTABLE git.exe
-	#	  PATHS
-	#	  "C:\\Program Files (x86)\\Git\\bin\\"
-	#	  DOC "git command line client")
-	   message(${GIT_EXECUTABLE} hi)
    endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
    
    ExternalProject_add(glfw
