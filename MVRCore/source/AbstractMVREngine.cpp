@@ -52,7 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace MinVR {
 
-AbstractMVREngine::AbstractMVREngine()
+AbstractMVREngine::AbstractMVREngine() : _pluginManager(this)
 {
 }
 
@@ -72,8 +72,10 @@ void AbstractMVREngine::init(int argc, char **argv)
 	initializeLogging();
 	_configMap.reset(new ConfigMap(argc, argv, false));
 	ConfigValMap::map = _configMap;
-	
+
 	_syncTimeStart = getCurrentTime();
+
+	setupPlugins();
 	setupWindowsAndViewports();
 	setupInputDevices();
 }
@@ -84,8 +86,21 @@ void AbstractMVREngine::init(ConfigMapRef configMap)
 	ConfigValMap::map = _configMap;
 
 	_syncTimeStart = getCurrentTime();
+
+	setupPlugins();
 	setupWindowsAndViewports();
 	setupInputDevices();
+}
+
+void AbstractMVREngine::setupPlugins()
+{
+	std::string pluginList = _configMap->get("Plugins", "");
+	std::vector<std::string> plugins = splitStringIntoArray(pluginList);
+	for (int f=0; f<plugins.size(); f++)
+	{
+		std::cout << plugins[f] << std::endl;
+		_pluginManager.loadPlugin(plugins[f]);
+	}
 }
 
 void AbstractMVREngine::setupWindowsAndViewports()
@@ -200,6 +215,8 @@ void AbstractMVREngine::setupWindowsAndViewports()
 
 void AbstractMVREngine::setupInputDevices()
 {
+	using namespace framework;
+
 	std::string devicesFile = _configMap->get("InputDevicesFile", "");
 	if (devicesFile != "") {
 		ConfigMapRef devicesMap(new ConfigMap(DataFileUtils::findDataFile(devicesFile)));
@@ -209,22 +226,20 @@ void AbstractMVREngine::setupInputDevices()
 		for (int i=0;i<devnames.size();i++) {
 			std::string type = devicesMap->get(devnames[i] + "_Type", "");
 
-			if (type == "InputDeviceVRPNAnalog") {
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceVRPNAnalog(devnames[i], devicesMap)));
+			bool foundType = false;
+			for (int f = 0; f < _inputDeviceDrivers.size(); f++)
+			{
+				InputDeviceRef inputDevice = _inputDeviceDrivers[f]->create(type, devicesMap);
+				if (inputDevice != NULL)
+				{
+					_inputDevices.push_back(inputDevice);
+					foundType = true;
+					break;
+				}
 			}
-			else if (type == "InputDeviceVRPNButton") {
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceVRPNButton(devnames[i], devicesMap)));
-			}
-			else if (type == "InputDeviceVRPNTracker") {
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceVRPNTracker(devnames[i], devicesMap)));
-			}
-			else if (type == "InputDeviceTUIOClient") { 
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceTUIOClient(devnames[i], devicesMap)));
-			}
-			else if (type == "InputDeviceSpaceNav") {
-				_inputDevices.push_back(AbstractInputDeviceRef(new InputDeviceSpaceNav(devnames[i], devicesMap)));
-			}
-			else {
+
+			if (!foundType)
+			{
 				std::stringstream ss;
 				ss << "Fatal error: Unrecognized input device type" << type;
 				Logger::getInstance().assertMessage(false, ss.str().c_str());
@@ -349,6 +364,11 @@ void AbstractMVREngine::updateProjectionForHeadTracking()
 		}
 	}
 } 
+
+void AbstractMVREngine::addInputDeviceDriver(MinVR::framework::InputDeviceDriverRef driver)
+{
+	_inputDeviceDrivers.push_back(driver);
+}
 
 } // end namespace
 

@@ -30,7 +30,7 @@ void SharedLibrary::load() {
 	{
 		HandleType _lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
 		if (!_lib) {
-			MinVR::Logger::getInstance().assertMessage(!_lib, "Could not load library: " + _filePath);
+			MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath);
 			dlerror();
 			return;
 		}
