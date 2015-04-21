@@ -200,7 +200,7 @@ void AbstractMVREngine::setupWindowsAndViewports()
 
 void AbstractMVREngine::setupInputDevices()
 {
-	std::string devicesFile = _configMap->get("InputDevicesFile", "");
+	/*std::string devicesFile = _configMap->get("InputDevicesFile", "");
 	if (devicesFile != "") {
 		ConfigMapRef devicesMap(new ConfigMap(DataFileUtils::findDataFile(devicesFile)));
 		std::string inputDevices = devicesMap->get( "InputDevices", "");
@@ -230,7 +230,7 @@ void AbstractMVREngine::setupInputDevices()
 				Logger::getInstance().assertMessage(false, ss.str().c_str());
 			}
 		}
-	}
+	}*/
 }
 
 void AbstractMVREngine::initializeContextSpecificVars(int threadId, WindowRef window)

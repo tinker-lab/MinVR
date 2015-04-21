@@ -13,11 +13,6 @@ source/ConfigMap.cpp
 source/ConfigVal.cpp
 source/DataFileUtils.cpp
 source/Event.cpp
-source/InputDeviceSpaceNav.cpp
-source/InputDeviceTUIOClient.cpp
-source/InputDeviceVRPNAnalog.cpp
-source/InputDeviceVRPNButton.cpp
-source/InputDeviceVRPNTracker.cpp
 source/RenderThread.cpp
 source/StringUtils.cpp
 source/Rect2D.cpp
@@ -33,7 +28,6 @@ source/framework/plugin/SharedLibrary.cpp
 
 set (HEADERFILES
 include/MVRCore/AbstractCamera.H
-include/MVRCore/AbstractInputDevice.H
 include/MVRCore/AbstractMVRApp.H
 include/MVRCore/AbstractMVREngine.H
 include/MVRCore/AbstractWindow.H
@@ -43,11 +37,6 @@ include/MVRCore/ConfigMap.H
 include/MVRCore/ConfigVal.H
 include/MVRCore/DataFileUtils.H
 include/MVRCore/Event.H
-include/MVRCore/InputDeviceSpaceNav.H
-include/MVRCore/InputDeviceTUIOClient.H
-include/MVRCore/InputDeviceVRPNAnalog.H
-include/MVRCore/InputDeviceVRPNButton.H
-include/MVRCore/InputDeviceVRPNTracker.H
 include/MVRCore/RenderThread.H
 include/MVRCore/StringUtils.H
 include/MVRCore/WindowSettings.H
@@ -82,22 +71,6 @@ if (USE_BOOST)
 	include/Boost/BoostTime.h
 	)
 endif()
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	# Mac OS X specific code
-	set (SOURCEFILES ${SOURCEFILES} source/InputDeviceSpaceNav_OSX.cpp)
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	# Linux specific code
-	set (SOURCEFILES ${SOURCEFILES} source/InputDeviceSpaceNav_Linux.cpp)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	set (SOURCEFILES ${SOURCEFILES} source/InputDeviceSpaceNav_Windows.cpp)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 source_group("Header Files" FILES ${HEADERFILES})
 

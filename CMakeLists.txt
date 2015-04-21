@@ -11,9 +11,6 @@ set(MINVR_VERSION_EXTRA "")
 set(MINVR_VERSION "${MINVR_VERSION_MAJOR}.${MINVR_VERSION_MINOR}")
 set(MINVR_VERSION_FULL "${MINVR_VERSION}.${MINVR_VERSION_PATCH}${MINVR_VERSION_EXTRA}")
 
-option(USE_VRPN "Enable events from vrpn devices" ON)
-option(USE_TUIO "Enable generation of events from a tuio device" OFF)
-option(USE_SPACENAV "Enable generation of events from the 3dconnexion SpaceNavigator device" OFF)
 option(USE_BOOST "Forces the application to use Boost" OFF)
 
 option(USE_APPKIT_GLFW "Enable to use the GLFW app kit" ON)
@@ -36,104 +33,6 @@ if (BUILD_DOCUMENTATION)
 	if (DOXYGEN_FOUND)
 		add_subdirectory(docs)
 	endif()
-endif()
-
-if (USE_VRPN)
-	find_package(LibVRPN)
-	if (LIBVRPN_FOUND)
-		add_definitions(-DUSE_VRPN)
-		set(LIBS_OPT ${LIBS_OPT} ${LIBVRPN_OPT_LIBRARIES})
-		set(LIBS_DEBUG ${LIBS_DEBUG} ${LIBVRPN_DEBUG_LIBRARIES})
-		set(LIBS_ALL ${LIBS_ALL} ${LIBVRPN_ALL_LIBRARIES})
-		include_directories(${LIBVRPN_INCLUDE_DIRS})
-	elseif(BUILD_DEPENDENCIES)
-		set(vrpn_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/vrpn)
-		make_directory(${vrpn_checkout_Dir})
-        message("   Library will be built from source in ${vrpn_checkout_Dir}.")
-		include(ExternalProject)
-		set(vrpn_PREFIX "${vrpn_checkout_Dir}")
-		set(vrpn_INSTALL_DIR "${MINVR_INSTALL_DIR}/vrpn")
-		set(vrpn_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${vrpn_INSTALL_DIR} -DVRPN_BUILD_DIRECTSHOW_VIDEO_SERVER=OFF -DVRPN_BUILD_HID_GUI=OFF -DVRPN_BUILD_JAVA=OFF -DVRPN_BUILD_PYTHON=OFF -DVRPN_USE_DIRECTINPUT=OFF -DVRPN_USE_DIRECTSHOW=OFF)
-		set(vrpn_DIR "${vrpn_INSTALL_DIR}")
-
-
-		if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-			set(vrpn_CMAKE_ARGS ${vrpn_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
-		elseif(MSVC)
-				set(vrpn_CMAKE_ARGS ${vrpn_CMAKE_ARGS} -DVRPN_USE_HID=ON -DVRPN_HID_DEBUGGING=ON -DVRPN_USE_LOCAL_HIDAPI=ON)
-		endif()
-
-		ExternalProject_add(vrpn
-				PREFIX ${vrpn_PREFIX}
-				URL http://www.cs.unc.edu/Research/vrpn/downloads/vrpn_07_30.zip
-				INSTALL_DIR ${vrpn_INSTALL_DIR}
-				CMAKE_ARGS ${vrpn_CMAKE_ARGS}
-				UPDATE_COMMAND ""
-		 )		 
-		set_property(TARGET vrpn PROPERTY FOLDER "Dependencies")
-		set(VRPN_INCLUDE_DIR ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
-		if(MSVC)
-			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/vrpn.lib CACHE INTERNAL "VRPN lib file")
-		else()
-			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/libvrpn.a CACHE INTERNAL "VRPN lib file")
-		endif()	
-		add_definitions(-DUSE_VRPN)
-		set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
-		include_directories(${VRPN_INCLUDE_DIR})
-	endif()
-endif()
-
-if (USE_TUIO)
-	find_package(LibTUIO)
-	if (LIBTUIO_FOUND)
-		add_definitions(-DUSE_TUIO)
-		set(LIBS_OPT ${LIBS_OPT} ${LIBTUIO_OPT_LIBRARIES})
-		set(LIBS_DEBUG ${LIBS_DEBUG} ${LIBTUIO_DEBUG_LIBRARIES})
-		set(LIBS_ALL ${LIBS_ALL} ${LIBTUIO_ALL_LIBRARIES})
-		include_directories(${LIBTUIO_INCLUDE_DIRS})
-	elseif(BUILD_DEPENDENCIES)
-		set(tuio_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/tuio)
-		make_directory(${tuio_checkout_Dir})
-        message("   Library will be built from source in ${tuio_checkout_Dir}.")
-		include(ExternalProject)
-		set(tuio_PREFIX "${tuio_checkout_Dir}")
-		set(tuio_INSTALL_DIR "${MINVR_INSTALL_DIR}/tuio")
-		set(tuio_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${tuio_INSTALL_DIR}")
-		set(tuio_DIR "${tuio_INSTALL_DIR}")
-		set(tuio_PATCH "${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt")
-
-		if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-			set(tuio_CMAKE_ARGS ${tuio_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
-		endif()
-
-		ExternalProject_add(TUIO
-				PREFIX ${tuio_PREFIX}
-				URL http://prdownloads.sourceforge.net/reactivision/TUIO_CPP-1.4.zip
-				INSTALL_DIR ${tuio_INSTALL_DIR}
-				CMAKE_ARGS ${tuio_CMAKE_ARGS}
-				PATCH_COMMAND ${tuio_PATCH}
-				UPDATE_COMMAND ""
-		 )		 
-		set_property(TARGET TUIO PROPERTY FOLDER "Dependencies")
-		set(TUIO_INCLUDE_DIR ${tuio_INSTALL_DIR}/include CACHE INTERNAL "Directory of TUIO header files")
-		if(MSVC)
-			set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/TUIO.lib CACHE INTERNAL "TUIO lib file")
-		else()
-			set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/libTUIO.a CACHE INTERNAL "TUIO lib file")
-		endif()
-		add_definitions(-DUSE_TUIO)
-		set(LIBS_ALL ${LIBS_ALL} ${TUIO_LIBRARY})
-		include_directories(${TUIO_INCLUDE_DIR})
-	endif()
-endif()
-
-if (USE_SPACENAV)
-	find_package(LibSPACENAV REQUIRED)
-	add_definitions(-DUSE_SPACENAV)
-	set(LIBS_OPT ${LIBS_OPT} ${LIBSPACENAV_OPT_LIBRARIES})
-	set(LIBS_DEBUG ${LIBS_DEBUG} ${LIBSPACENAV_DEBUG_LIBRARIES})
-	set(LIBS_ALL ${LIBS_ALL} ${LIBSPACENAV_ALL_LIBRARIES})
-	include_directories(${LIBSPACENAV_INCLUDE_DIRS})
 endif()
 
 find_package(OpenGL REQUIRED)
