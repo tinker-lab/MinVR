@@ -9,7 +9,7 @@ InputDevicesFile
 
 #Plugins+= /path/to/plugin
 #Plugins+= /path/to/plugin2
-Plugins+= /home/dan/src/MinVRExtended/build/install/lib/libMinVR_Test.so
+Plugins+= /home/dan/src/MinVRExtensions/build/install/MinVR_TUIO/lib/libMinVR_TUIO.so
 
 InterOcularDistance		0.2083
 InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))

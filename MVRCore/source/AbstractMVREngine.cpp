@@ -229,7 +229,7 @@ void AbstractMVREngine::setupInputDevices()
 			bool foundType = false;
 			for (int f = 0; f < _inputDeviceDrivers.size(); f++)
 			{
-				InputDeviceRef inputDevice = _inputDeviceDrivers[f]->create(type, devicesMap);
+				InputDeviceRef inputDevice = _inputDeviceDrivers[f]->create(type, devnames[i], devicesMap);
 				if (inputDevice != NULL)
 				{
 					_inputDevices.push_back(inputDevice);

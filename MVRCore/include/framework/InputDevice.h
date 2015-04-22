@@ -43,7 +43,7 @@ class InputDeviceDriver {
 public:
 	virtual ~InputDeviceDriver() {}
 
-	virtual InputDeviceRef create(std::string type, ConfigMapRef config) = 0;
+	virtual InputDeviceRef create(const std::string &type, const std::string& name, ConfigMapRef config) = 0;
 };
 
 } /* namespace framework */
