@@ -23,7 +23,7 @@ class Plugin {
 public:
 	virtual ~Plugin() {}
 
-	virtual bool registerPlugin(PluginInterface *interface) = 0;
+	virtual bool registerPlugin(PluginInterface *iface) = 0;
 };
 
 } /* namespace plugin */
@@ -33,7 +33,7 @@ public:
 
 extern "C"
 {
-	int getMinVRPluginFrameworkVersion() {
+	PLUGIN_API int getMinVRPluginFrameworkVersion() {
 		return PLUGIN_FRAMEWORK_VERSION;
 	}
 }
@@ -42,8 +42,8 @@ extern "C"
 
 extern "C"
 {
-	MinVR::framework::plugin::PluginRef loadPlugin() {
-		return MinVR::framework::plugin::PluginRef(new MinVR::framework::plugin::Plugin());
+	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
+		return new MinVR::framework::plugin::Plugin();
 	}
 }
 */

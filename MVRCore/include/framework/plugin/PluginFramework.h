@@ -11,4 +11,10 @@
 
 #define PLUGIN_FRAMEWORK_VERSION 0
 
+#if defined(WIN32)
+#define PLUGIN_API __declspec(dllexport)
+#else
+#define PLUGIN_API
+#endif
+
 #endif /* PLUGINFRAMEWORK_H_ */

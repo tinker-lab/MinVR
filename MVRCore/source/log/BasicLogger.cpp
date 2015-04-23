@@ -71,10 +71,10 @@ void BasicLogger::assertMessage(bool expression, const std::string& message)
 {
 	if (!expression)
 	{
-		assert(expression);
 		std::ostream& stream = getStream();
 		stream << "Assert: " << message << std::endl;
 		stream.flush();
+		assert(expression);
 	}
 }
 

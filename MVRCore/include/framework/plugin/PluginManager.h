@@ -20,7 +20,7 @@ namespace plugin {
 
 class PluginManager {
 public:
-	PluginManager(PluginInterface *interface);
+	PluginManager(PluginInterface *iface);
 	virtual ~PluginManager();
 
 	void loadPlugin(const std::string& filePath);
