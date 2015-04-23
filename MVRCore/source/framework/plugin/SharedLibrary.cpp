@@ -28,11 +28,17 @@ SharedLibrary::~SharedLibrary() {
 void SharedLibrary::load() {
 	if (!_isLoaded)
 	{
+		std::string error;
+#if defined(WIN32)
+		_lib = LoadLibraryA(_filePath.c_str());
+#else
+		dlerror();
 		_lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
+		error = dlerror();
+#endif
+
 		if (!_lib) {
-			const char* error = dlerror();
 			MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
-			dlerror();
 			return;
 		}
 
@@ -43,11 +49,16 @@ void SharedLibrary::load() {
 void SharedLibrary::unload() {
 	if (_isLoaded)
 	{
+		std::string error;
+#if defined(WIN32)
+		BOOL result = FreeLibrary(_lib);
+#else
+		dlerror();
 		int result = dlclose(_lib);
+		error = dlerror();
+#endif
 		if(result != 0) {
-			const char* error = dlerror();
 			MinVR::Logger::getInstance().assertMessage(false, "Could not unload library: " + _filePath + " - " + error);
-			dlerror();
 			return;
 		}
 
@@ -58,6 +69,16 @@ void SharedLibrary::unload() {
 void* SharedLibrary::loadSymbolInternal(const std::string &functionName) {
 	if (_isLoaded)
 	{
+#if defined(WIN32)
+		FARPROC symbol =GetProcAddress(_lib, functionName.c_str());
+		if (!symbol) {
+			MinVR::Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName + " - " + "");
+
+			return NULL;
+		}
+
+		return symbol;
+#else
 		void* symbol = (void*) dlsym(_lib, functionName.c_str());
 		const char* dlsym_error = dlerror();
 		if (dlsym_error) {
@@ -68,6 +89,8 @@ void* SharedLibrary::loadSymbolInternal(const std::string &functionName) {
 		}
 
 		return symbol;
+#endif
+
 	}
 
 	return NULL;

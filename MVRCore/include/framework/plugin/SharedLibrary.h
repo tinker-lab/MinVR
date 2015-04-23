@@ -12,8 +12,13 @@
 #include <string>
 #include <memory>
 
-#include <dlfcn.h>
-typedef void * HandleType;
+#if defined(WIN32)
+	#include <Windows.h>
+	typedef HMODULE HandleType;
+#else
+	#include <dlfcn.h>
+	typedef void * HandleType;
+#endif
 
 namespace MinVR {
 namespace framework {

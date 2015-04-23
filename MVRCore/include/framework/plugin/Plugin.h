@@ -23,7 +23,7 @@ class Plugin {
 public:
 	virtual ~Plugin() {}
 
-	virtual bool registerPlugin(PluginInterface *interface) = 0;
+	virtual bool registerPlugin(PluginInterface *iface) = 0;
 };
 
 } /* namespace plugin */
