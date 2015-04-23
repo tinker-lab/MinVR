@@ -34,7 +34,7 @@ public:
 extern "C"
 {
 	int getMinVRPluginFrameworkVersion() {
-		return MINVR_PLUGIN_FRAMEWORK_VERSION;
+		return PLUGIN_FRAMEWORK_VERSION;
 	}
 }
 

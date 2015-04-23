@@ -19,6 +19,17 @@ class PluginInterface {
 public:
 	virtual ~PluginInterface() {}
 
+	template<typename T>
+	inline T* getInterface()
+	{
+		return dynamic_cast<T*>(this);
+	}
+};
+
+class MinVRInterface : public PluginInterface {
+public:
+	virtual ~MinVRInterface() {}
+
 	virtual void addGraphicsDriver() {};
 	virtual void addInputDeviceDriver(InputDeviceDriverRef driver) = 0;
 	virtual void addStereoDriver() {};
