@@ -317,7 +317,7 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 
 	TimeStamp now = getCurrentTime();
 	Duration diff = getDuration(now,_syncTimeStart);
-	double syncTime = getSeconds(diff);
+	double syncTime = getDurationSeconds(diff);
 	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 
 	//std::cout << "Notifying rendering threads to start rendering frame: "<<_frameCount++<<std::endl;

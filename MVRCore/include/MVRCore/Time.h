@@ -58,7 +58,7 @@ namespace MinVR
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> TimeStamp;
 typedef std::chrono::duration<double> Duration;
 #define getDuration(a,b) std::chrono::duration_cast< std::chrono::duration<double> >(a - b)
-#define getSeconds(duration) duration.count()
+#define getDurationSeconds(duration) duration.count()
 
 }
 #endif
