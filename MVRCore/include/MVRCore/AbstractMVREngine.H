@@ -78,7 +78,7 @@ namespace MinVR {
  *
  *  The MVREngine handles creating the windows, threads, devices, and mainloop.
  */
-class AbstractMVREngine : public MinVR::framework::plugin::PluginInterface {
+class AbstractMVREngine : public MinVR::framework::plugin::MinVRInterface {
 public:
 
 	AbstractMVREngine();
