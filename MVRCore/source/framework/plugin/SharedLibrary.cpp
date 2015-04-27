@@ -28,7 +28,7 @@ SharedLibrary::~SharedLibrary() {
 void SharedLibrary::load() {
 	if (!_isLoaded)
 	{
-		std::string error;
+		const char* error;
 #if defined(WIN32)
 		_lib = LoadLibraryA(_filePath.c_str());
 #else
@@ -49,7 +49,7 @@ void SharedLibrary::load() {
 void SharedLibrary::unload() {
 	if (_isLoaded)
 	{
-		std::string error;
+		const char* error;
 #if defined(WIN32)
 		BOOL result = FreeLibrary(_lib);
 #else
