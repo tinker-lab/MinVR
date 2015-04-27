@@ -16,7 +16,7 @@ namespace MinVR {
 namespace framework {
 namespace plugin {
 
-PluginManager::PluginManager(PluginInterface *interface) : _interface(interface) {
+PluginManager::PluginManager(PluginInterface *iface) : _interface(iface) {
 }
 
 PluginManager::~PluginManager() {
