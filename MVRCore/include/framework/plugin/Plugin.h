@@ -33,7 +33,7 @@ public:
 
 extern "C"
 {
-	int getMinVRPluginFrameworkVersion() {
+	PLUGIN_API int getMinVRPluginFrameworkVersion() {
 		return PLUGIN_FRAMEWORK_VERSION;
 	}
 }
@@ -42,7 +42,7 @@ extern "C"
 
 extern "C"
 {
-	MinVR::framework::plugin::Plugin* loadPlugin() {
+	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
 		return new MinVR::framework::plugin::Plugin();
 	}
 }
