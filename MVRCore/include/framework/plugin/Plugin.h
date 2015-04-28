@@ -42,8 +42,8 @@ extern "C"
 
 extern "C"
 {
-	MinVR::framework::plugin::PluginRef loadPlugin() {
-		return MinVR::framework::plugin::PluginRef(new MinVR::framework::plugin::Plugin());
+	MinVR::framework::plugin::Plugin* loadPlugin() {
+		return new MinVR::framework::plugin::Plugin();
 	}
 }
 */
