@@ -97,6 +97,19 @@ DataFileUtils::DataFileUtils()
 	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/"));
 	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/vrsetup"));
 	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/shaders"));
+
+	std::string pluginDir = FileSystem::getInstance().concatPath(INSTALLPATH, "plugins");
+	std::vector<std::string> dirs = FileSystem::getInstance().listDirectory(pluginDir, true);
+	for (int f = 0; f < dirs.size(); f++)
+	{
+		if (dirs[f][0] != '.')
+		{
+			std::string dir = FileSystem::getInstance().concatPath(pluginDir, dirs[f]);
+			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/"));
+			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/vrsetup"));
+			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/shaders"));
+		}
+	}
 }
 
 std::string DataFileUtils::_findDataFile(const std::string &filename)

@@ -55,6 +55,7 @@ public:
 
 	bool exists(const std::string& fileName);
 	std::string concatPath(const std::string& pathA, const std::string& pathB);
+	std::vector<std::string> listDirectory(const std::string& path, bool directories);
 };
 
 } /* namespace MinVR */

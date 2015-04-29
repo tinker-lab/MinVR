@@ -22,15 +22,24 @@ PluginManager::PluginManager(PluginInterface *iface) : _interface(iface) {
 PluginManager::~PluginManager() {
 }
 
-void PluginManager::loadPlugin(const std::string& filePath) {
-	SharedLibraryRef lib = SharedLibraryRef(new SharedLibrary(filePath));
+void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
+
+	//Plugins+= /home/dan/src/MinVRExtensions/build/install/MinVR_vrpn/lib/libMinVR_vrpn.so
+	//#Plugins+= ../MinVRExtensions/build/install/MinVR_TUIO/bin/MinVR_TUIO.dll
+#if defined(WIN32)
+	std::string path = filePath + "/bin/" + name + ".dll";
+#else
+	std::string path = filePath + "/lib/lib" + name + ".so";
+#endif
+
+	SharedLibraryRef lib = SharedLibraryRef(new SharedLibrary(path));
 	if (lib->isLoaded())
 	{
 		typedef int version_t();
 		version_t* getVersion = lib->loadSymbol<version_t>("getMinVRPluginFrameworkVersion");
 		if (getVersion() != getMinVRPluginFrameworkVersion())
 		{
-			MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + filePath + " - Incorrect framework version");
+			MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + path + " - Incorrect framework version");
 			return;
 		}
 
@@ -43,7 +52,7 @@ void PluginManager::loadPlugin(const std::string& filePath) {
 		PluginRef plugin = PluginRef(loadPlugin());
 		if (!plugin->registerPlugin(_interface))
 		{
-			MinVR::Logger::getInstance().assertMessage(false, "Failed registering plugin: " + filePath);
+			MinVR::Logger::getInstance().assertMessage(false, "Failed registering plugin: " + path);
 			return;
 		}
 

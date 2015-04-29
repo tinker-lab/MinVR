@@ -48,6 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <log/BasicLogger.h>
 #include <log/ThreadSafeLogger.h>
 #include <log/CompositeLogger.h>
+#include <io/FileSystem.h>
 #include <fstream>
 
 namespace MinVR {
@@ -96,10 +97,12 @@ void AbstractMVREngine::setupPlugins()
 {
 	std::string pluginList = _configMap->get("Plugins", "");
 	std::vector<std::string> plugins = splitStringIntoArray(pluginList);
+	std::string pluginDir = FileSystem::getInstance().concatPath(INSTALLPATH, "plugins");
 	for (int f=0; f<plugins.size(); f++)
 	{
 		std::cout << plugins[f] << std::endl;
-		_pluginManager.loadPlugin(plugins[f]);
+		std::string pluginPath = FileSystem::getInstance().concatPath(pluginDir, plugins[f]);
+		_pluginManager.loadPlugin(pluginPath, plugins[f]);
 	}
 }
 
