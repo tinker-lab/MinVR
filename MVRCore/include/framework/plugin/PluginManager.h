@@ -23,7 +23,7 @@ public:
 	PluginManager(PluginInterface *iface);
 	virtual ~PluginManager();
 
-	void loadPlugin(const std::string& filePath);
+	void loadPlugin(const std::string& path, const std::string& name);
 
 private:
 	PluginInterface *_interface;

@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Boost/BoostFileSystem.h>
 #include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 
 namespace MinVR {
 
@@ -62,6 +63,27 @@ bool BoostFileSystem::exists(const std::string& fileName) {
 std::string BoostFileSystem::concatPath(const std::string& pathA,
 		const std::string& pathB) {
 	return (boost::filesystem::path(pathA) / boost::filesystem::path(pathB)).string();
+}
+
+std::vector<std::string> BoostFileSystem::listDirectory(const std::string& path, bool directories)
+{
+	using namespace boost::filesystem;
+
+	std::vector<std::string> files;
+
+	for (directory_iterator itr(path); itr!=directory_iterator(); ++itr)
+	{
+		if (directories && is_directory(itr->path()))
+		{
+			files.push_back(itr->path().filename());
+		}
+		else if (is_regular_file(path))
+		{
+			files.push_back(itr->path().filename());
+		}
+	}
+
+	return files;
 }
 
 } /* namespace MinVR */

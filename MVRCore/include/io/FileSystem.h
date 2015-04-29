@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FILESYSTEM_H_
 
 #include <string>
+#include <vector>
 
 namespace MinVR {
 
@@ -55,6 +56,7 @@ public:
 	static FileSystem& getInstance();
 	virtual bool exists(const std::string& fileName) = 0;
 	virtual std::string concatPath(const std::string& pathA, const std::string& pathB) = 0;
+	virtual std::vector<std::string> listDirectory(const std::string& path, bool directories) = 0;
 };
 
 } /* namespace MinVR */
