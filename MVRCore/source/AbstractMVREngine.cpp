@@ -244,7 +244,7 @@ void AbstractMVREngine::setupInputDevices()
 			if (!foundType)
 			{
 				std::stringstream ss;
-				ss << "Fatal error: Unrecognized input device type" << type;
+				ss << "Fatal error: Unrecognized input device type " << type;
 				Logger::getInstance().assertMessage(false, ss.str().c_str());
 			}
 		}
