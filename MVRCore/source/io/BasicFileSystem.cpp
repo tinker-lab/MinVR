@@ -45,7 +45,7 @@ std::vector<std::string> BasicFileSystem::listDirectory(
 
 #if defined(WIN32)
     char search_path[300];
-    sprintf(search_path, "%s*.*", path.c_str());
+    sprintf(search_path, "%s/*.*", path.c_str());
     WIN32_FIND_DATA fd;
     HANDLE hFind = ::FindFirstFile(search_path, &fd);
     if(hFind != INVALID_HANDLE_VALUE) {
