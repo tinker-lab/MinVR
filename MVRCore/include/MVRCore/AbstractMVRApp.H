@@ -102,6 +102,13 @@ public:
 	*/
 	virtual void postInitialization() = 0;
 
+	/*! @brief Allows computation to be done for each render thread.
+	*
+	*  This will be called each frame before drawGraphics.  It allows for context specific computation to be done
+	*  independent of drawing graphics.  This optional method is only called once per render thread.
+	 */
+	virtual void perFrameComputation(int threadId, WindowRef window) {}
+
 	/*! @brief Drawing code.
 	 *  This is where all your OpenGL drawing code should go.  This routine is typically called more than
 	 *  once per frame.  In a desktop VR environment, this would be called once to draw the image for the

@@ -143,6 +143,7 @@ void RenderThread::render()
 		startRenderingLock.unlock();
 
 		//cout <<"\t Thread "<<_threadId<<" received start rendering"<<endl;
+		_app->perFrameComputation(_threadId, _window);
 
 		// Draw the scene
 		// Monoscopic
