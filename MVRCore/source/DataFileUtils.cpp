@@ -86,15 +86,15 @@ void DataFileUtils::addFileSearchPath(const std::string &path)
 
 DataFileUtils::DataFileUtils()
 {
-	_dataFilePaths.push_back("");
-	_dataFilePaths.push_back("share/");
-	_dataFilePaths.push_back("share/vrsetup/");
-	_dataFilePaths.push_back("share/shaders/");
-	_dataFilePaths.push_back("../../share/");
-	_dataFilePaths.push_back("../../share/vrsetup/");
-	_dataFilePaths.push_back("../../share/shaders/");
+	_dataFilePaths.push_back(".");
+	_dataFilePaths.push_back("share");
+	_dataFilePaths.push_back("share/vrsetup");
+	_dataFilePaths.push_back("share/shaders");
+	_dataFilePaths.push_back("../../share");
+	_dataFilePaths.push_back("../../share/vrsetup");
+	_dataFilePaths.push_back("../../share/shaders");
 	_dataFilePaths.push_back(INSTALLPATH);
-	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/"));
+	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share"));
 	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/vrsetup"));
 	_dataFilePaths.push_back(FileSystem::getInstance().concatPath(INSTALLPATH, "share/shaders"));
 
@@ -105,7 +105,7 @@ DataFileUtils::DataFileUtils()
 		if (dirs[f][0] != '.')
 		{
 			std::string dir = FileSystem::getInstance().concatPath(pluginDir, dirs[f]);
-			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/"));
+			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share"));
 			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/vrsetup"));
 			_dataFilePaths.push_back(FileSystem::getInstance().concatPath(dir, "share/shaders"));
 		}
