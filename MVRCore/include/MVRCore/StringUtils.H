@@ -203,6 +203,8 @@ void replaceAll(std::string& str, const std::string& search, const std::string& 
 
 void toUpper(std::string& str);
 
+bool startsWith(std::string& input, const std::string& symbol);
+
 // checks if input begins with symbol, ignoring whitespace. If so, it
 // returns true and removes symbol and the surrounding whitespace from input
 bool readSymbol(std::string& input, const std::string& symbol);
