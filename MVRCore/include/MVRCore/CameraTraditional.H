@@ -97,6 +97,15 @@ public:
 	*  coordinate system. It is used when setting the opengl modelview matrix.
 	*/
 	virtual void setObjectToWorldMatrix(glm::mat4 obj2World) = 0;
+
+	/*! @brief Gets the object to world matrix.
+		*
+		*  This method gets the transformation between the current object (model) space and world (room)
+		*  coordinate system. It is used when setting the opengl modelview matrix.
+		*
+		*  @remarks This should be implemented by any derived classes.
+		*/
+	virtual glm::dmat4 getObjectToWorldMatrix() = 0;
 };
 
 } // end namespace
