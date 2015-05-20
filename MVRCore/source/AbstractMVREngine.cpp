@@ -102,7 +102,13 @@ void AbstractMVREngine::setupPlugins()
 	{
 		std::cout << plugins[f] << std::endl;
 		std::string pluginPath = FileSystem::getInstance().concatPath(pluginDir, plugins[f]);
-		_pluginManager.loadPlugin(pluginPath, plugins[f]);
+
+		std::string config = "";
+	#ifdef MinVR_DEBUG
+		config = "d";
+	#endif
+
+		_pluginManager.loadPlugin(pluginPath, plugins[f] + config);
 	}
 }
 

@@ -59,10 +59,10 @@ PluginManager::~PluginManager() {
 
 void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
 
-	//Plugins+= /home/dan/src/MinVRExtensions/build/install/MinVR_vrpn/lib/libMinVR_vrpn.so
-	//#Plugins+= ../MinVRExtensions/build/install/MinVR_TUIO/bin/MinVR_TUIO.dll
 #if defined(WIN32)
 	std::string path = filePath + "/bin/" + name + ".dll";
+#elif defined(__APPLE__)
+	std::string path = filePath + "/lib/lib" + name + ".dylib";
 #else
 	std::string path = filePath + "/lib/lib" + name + ".so";
 #endif

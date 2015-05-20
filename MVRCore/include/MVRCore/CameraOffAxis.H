@@ -117,6 +117,14 @@ public:
 	*/
 	virtual void setObjectToWorldMatrix(glm::dmat4 obj2World);
 
+	/*! @brief Gets the object to world matrix.
+		*
+		*  This method gets the transformation between the current object (model) space and world (room)
+		*  coordinate system. It is used when setting the opengl modelview matrix.
+		*
+		*/
+	virtual glm::dmat4 getObjectToWorldMatrix();
+
 	/*! @brief Gets the current location of the left eye.
 	*
 	*  Based on the current head position and interocular distance, this returns the left eye position

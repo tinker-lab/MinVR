@@ -221,6 +221,11 @@ void CameraOffAxis::setObjectToWorldMatrix(glm::dmat4 obj2World)
 	glLoadMatrixf(matrix);
 }
 
+glm::dmat4 CameraOffAxis::getObjectToWorldMatrix()
+{
+	return _object2World;
+}
+
 
 void CameraOffAxis::applyProjectionAndCameraMatrices(const glm::dmat4& projectionMat, const glm::dmat4& viewMat)
 {
