@@ -45,7 +45,7 @@ use_boost:
 	  cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../../
 	  cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../../
     else ifeq ($(ARCH), WIN32)
-	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install -DUSE_BOOST=ON ../ -G "Visual Studio 10 Win64"
+	  cd ./build; cmake -DGBUILDSTR=$(GBUILDSTR) -DCMAKE_INSTALL_PREFIX=$(WINCURDIR)/build/install -DUSE_BOOST=ON ../ -G "Visual Studio 11 Win64"
     else ifeq ($(ARCH), OSX)
 	  cd ./build; cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/build/install -DUSE_BOOST=ON ../ -G Xcode
     endif

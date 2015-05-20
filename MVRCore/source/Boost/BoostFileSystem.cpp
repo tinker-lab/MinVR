@@ -75,11 +75,11 @@ std::vector<std::string> BoostFileSystem::listDirectory(const std::string& path,
 	{
 		if (directories && is_directory(itr->path()))
 		{
-			files.push_back(itr->path().filename());
+			files.push_back(itr->path().filename().string());
 		}
 		else if (is_regular_file(path))
 		{
-			files.push_back(itr->path().filename());
+			files.push_back(itr->path().filename().string());
 		}
 	}
 
