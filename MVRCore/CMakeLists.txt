@@ -113,6 +113,7 @@ else()
 	set(CMAKE_BUILD_POSTFIX "")
 endif()
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
 
 # Build Target
 
