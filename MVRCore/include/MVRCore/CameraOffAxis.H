@@ -147,6 +147,30 @@ public:
 	*/
 	glm::dvec3 getLookVector();
 
+	/*! @brief Gets the position of the display tile
+	*
+	*  @return An xyz position of the display tile
+	*/
+	glm::dvec3 getTopLeft() const;
+
+	/*! @brief Gets the position of the display tile
+	*
+	*  @return An xyz position of the display tile
+	*/
+	glm::dvec3 getTopRight() const;
+
+	/*! @brief Gets the position of the display tile
+	*
+	*  @return An xyz position of the display tile
+	*/
+	glm::dvec3 getBottomLeft() const;
+
+	/*! @brief Gets the position of the display tile
+	*
+	*  @return An xyz position of the display tile
+	*/
+	glm::dvec3 getBottomRight() const;
+
 protected:
 
 	glm::dvec3 _topLeft;

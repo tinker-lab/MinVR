@@ -276,4 +276,20 @@ glm::dvec3 CameraOffAxis::getLookVector()
 	return glm::normalize(filmPlaneCtr - headPos);
 }
 
+glm::dvec3 CameraOffAxis::getTopLeft() const {
+	return _topLeft;
+}
+
+glm::dvec3 CameraOffAxis::getTopRight() const {
+	return _topRight;
+}
+
+glm::dvec3 CameraOffAxis::getBottomLeft() const {
+	return _botLeft;
+}
+
+glm::dvec3 CameraOffAxis::getBottomRight() const {
+	return _botRight;
+}
+
 } // End namespace
