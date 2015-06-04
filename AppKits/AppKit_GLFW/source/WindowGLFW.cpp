@@ -153,6 +153,14 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	_yPos = settings->yPos;
 	glfwSetWindowPosCallback(_window, &window_pos_callback);
 
+	int frameBufferWidth, frameBufferHeight;
+	glfwGetFramebufferSize(_window, &frameBufferWidth, &frameBufferHeight);
+	glm::dvec2 pixelScale(((float)frameBufferWidth)/_width, ((float)frameBufferHeight)/_height);
+
+	for(int i=0; i < settings->viewports.size(); i++) {
+		settings->viewports[i].scale(pixelScale);
+	}
+
 	glfwSetKeyCallback(_window, &key_callback);
 	glfwSetCursorEnterCallback(_window, &cursor_enter_callback);
 	glfwSetCursorPosCallback(_window, &cursor_position_callback);
