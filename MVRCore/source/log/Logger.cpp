@@ -60,7 +60,7 @@ Logger::~Logger() {
 inline Logger* getLogger()
 {
 #ifdef USE_BOOST
-	return new BoostLogger()
+	return new BoostLogger();
 #else
 	CompositeLogger* compositeLogger = new CompositeLogger();
 	compositeLogger->addLogger(LoggerRef(new BasicLogger()));
