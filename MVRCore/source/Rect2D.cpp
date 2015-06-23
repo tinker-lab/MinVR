@@ -99,4 +99,11 @@ int Rect2D::y1()
 	return _y+_height;
 }
 
+void Rect2D::scale(glm::dvec2 scaleValues){
+	_height *= scaleValues.y;
+	_width *= scaleValues.x;
+	_x *= scaleValues.x;
+	_y *= scaleValues.y;
+}
+
 } // namespace
