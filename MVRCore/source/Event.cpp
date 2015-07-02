@@ -272,28 +272,19 @@ std::string	Event::toString()
 		ss << _data1D;
 		break;
 	case EVENTTYPE_2D:
-		ss << "(" << _data2D[0] << " ," << _data2D[1] << ")";
+		ss << "(" << _data2D[0] << ", " << _data2D[1] << ")";
 		break;
 	case EVENTTYPE_3D:
-		ss << "(" << _data3D[0] << " ," << _data3D[1] << " ," << _data3D[2] << ")";
+		ss << "(" << _data3D[0] << ", " << _data3D[1] << ", " << _data3D[2] << ")";
 		break;
 	case EVENTTYPE_4D:
-		ss << "(" << _data4D[0] << " ," << _data4D[1] << " ," << _data4D[2] << " ," << _data4D[3] << ")";
+		ss << "(" << _data4D[0] << ", " << _data4D[1] << ", " << _data4D[2] << ", " << _data4D[3] << ")";
 		break;
 	case EVENTTYPE_COORDINATEFRAME:
-		ss << "(";
-		for (int f = 0; f < 4; f++)
-		{
-			if (f != 0)
-			{
-				ss << ", ";
-			}
-			for (int i = 0; i < 4; i++)
-			{
-				ss << "(" << _dataCF[i][f] << " ," << _dataCF[i][f] << " ," << _dataCF[i][f] << " ," << _dataCF[i][f] << ")";
-			}
-		}
-		ss << ")";
+		ss<< "((" << _dataCF[0][0] << ", " << _dataCF[1][0] << ", " << _dataCF[2][0] << ", " << _dataCF[3][0] << "), "
+		<< "(" << _dataCF[0][1] << ", " << _dataCF[1][1] << ", " << _dataCF[2][1] << ", " << _dataCF[3][1] << "), "
+		<< "(" << _dataCF[0][2] << ", " << _dataCF[1][2] << ", " << _dataCF[2][2] << ", " << _dataCF[3][2] << "), "
+		<< "(" << _dataCF[0][3] << ", " << _dataCF[1][3] << ", " << _dataCF[2][3] << ", " << _dataCF[3][3] << "))";
 		break;
 	case EVENTTYPE_MSG:
 		ss << escapedMessage;
